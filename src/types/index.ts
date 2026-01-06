@@ -15,6 +15,7 @@ export interface User {
 
 export interface AuthResponse {
     token: string;
+    id: number;
     phoneNumber: string;
     name: string;
     role: string;

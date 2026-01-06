@@ -1,45 +1,43 @@
-/**
- * Street Burger - Reviews API Service
- */
-
 import api from '../config/api';
-import { ApiResponse, Review, ReviewRequest } from '../types';
+
+export interface Review {
+    id: number;
+    reviewerName: string;
+    phoneNumber: string;
+    rating: number;
+    comment: string;
+    isApproved: boolean;
+    createdAt: string;
+    user?: {
+        id: number;
+        name: string;
+    };
+}
+
+export interface ReviewRequest {
+    reviewerName?: string;
+    rating: number;
+    comment: string;
+}
 
 export const reviewService = {
-    // Get all approved reviews
-    getAll: async (): Promise<Review[]> => {
-        const response = await api.get<ApiResponse<Review[]>>('/reviews');
-        return response.data.data;
+    getAll: async () => {
+        const response = await api.get('/reviews');
+        return response.data;
     },
 
-    // Get latest reviews
-    getLatest: async (): Promise<Review[]> => {
-        const response = await api.get<ApiResponse<Review[]>>('/reviews/latest');
-        return response.data.data;
+    getLatest: async () => {
+        const response = await api.get('/reviews/latest');
+        return response.data;
     },
 
-    // Add a new review
-    add: async (phoneNumber: string, data: ReviewRequest): Promise<Review> => {
-        const response = await api.post<ApiResponse<Review>>(`/reviews/add/${phoneNumber}`, data);
-        return response.data.data;
+    add: async (phoneNumber: string, data: ReviewRequest) => {
+        const response = await api.post(`/reviews/add/${phoneNumber}`, data);
+        return response.data;
     },
 
-    // Update a review
-    update: async (id: number, data: Partial<ReviewRequest>): Promise<Review> => {
-        const response = await api.put<ApiResponse<Review>>(`/reviews/${id}`, data);
-        return response.data.data;
-    },
-
-    // Delete a review
-    delete: async (id: number): Promise<void> => {
-        await api.delete(`/reviews/${id}`);
-    },
-
-    // Get reviews by user
-    getByUser: async (phoneNumber: string): Promise<Review[]> => {
-        const response = await api.get<ApiResponse<Review[]>>(`/reviews/user/${phoneNumber}`);
-        return response.data.data;
-    },
+    delete: async (id: number) => {
+        const response = await api.delete(`/reviews/${id}`);
+        return response.data;
+    }
 };
-
-export default reviewService;

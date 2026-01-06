@@ -6,6 +6,7 @@ import * as SecureStore from 'expo-secure-store';
 import React, { ReactNode, createContext, useContext, useEffect, useReducer } from 'react';
 import api, { TOKEN_KEY, removeToken, setToken } from '../config/api';
 import { ApiResponse, AuthAction, AuthResponse, AuthState, SignupRequest, User } from '../types';
+import { registerForPushNotificationsAsync } from '../utils/notifications';
 
 interface AuthContextType extends AuthState {
     signIn: (phoneNumber: string, password: string) => Promise<{ success: boolean; message: string }>;
@@ -87,12 +88,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                         await removeToken();
                         token = null;
                     }
+                } else {
+                    console.log('[AuthContext] No token found, starting as guest');
                 }
             } catch (e) {
                 console.log('Error restoring token:', e);
             }
 
             dispatch({ type: 'RESTORE_TOKEN', token, user });
+
+            // Register for push notifications if authenticated
+            if (token) {
+                registerForPushNotificationsAsync();
+            }
         };
 
         bootstrapAsync();
@@ -109,27 +117,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 });
 
                 if (response.data.success) {
-                    const { token, name, role } = response.data.data;
+                    const { token, id, name, role } = response.data.data;
                     await setToken(token);
 
                     const user: User = {
-                        id: 0, // Will be updated when we fetch full profile
+                        id: id || 0,
                         phoneNumber,
-                        name,
+                        name: name || '',
                         role: role as 'USER' | 'ADMIN',
                     };
 
                     dispatch({ type: 'SIGN_IN', token, user });
 
-                    // Fetch full user profile
-                    try {
-                        const profileResponse = await api.get<ApiResponse<User>>('/users/me');
-                        if (profileResponse.data.success) {
-                            dispatch({ type: 'UPDATE_USER', user: profileResponse.data.data });
-                        }
-                    } catch (error) {
-                        // Continue with basic user info
-                    }
+                    // Register for push notifications
+                    registerForPushNotificationsAsync();
 
                     return { success: true, message: 'Login successful' };
                 } else {
@@ -140,10 +141,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 let message = 'Login failed. Please try again.';
 
                 if (error.response) {
-                    // The server responded with a status code that falls out of the range of 2xx
                     message = error.response.data?.message || message;
                 } else if (error.request) {
-                    // The request was made but no response was received
                     message = 'Unable to connect to the server. Please check your internet connection and ensure the backend is running.';
                 }
 
@@ -156,11 +155,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 const response = await api.post<ApiResponse<AuthResponse>>('/auth/signup', data);
 
                 if (response.data.success) {
-                    const { token, name, role } = response.data.data;
+                    const { token, id, name, role } = response.data.data;
                     await setToken(token);
 
                     const user: User = {
-                        id: 0,
+                        id: id || 0,
                         phoneNumber: data.phoneNumber,
                         name: name || data.name || '',
                         email: data.email,

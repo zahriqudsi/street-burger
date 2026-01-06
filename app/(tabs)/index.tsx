@@ -93,14 +93,21 @@ export default function HomeScreen() {
 
   const fetchData = async () => {
     try {
+      console.log('[HomeScreen] Fetching initial data...');
       const [reviewsData, infoData] = await Promise.all([
-        reviewService.getLatest().catch(() => []),
-        restaurantService.getInfo().catch(() => null),
+        reviewService.getLatest().catch((err) => {
+          console.log('[HomeScreen] Error fetching reviews:', err.message);
+          return [];
+        }),
+        restaurantService.getAll().then(res => res.data[0]).catch((err) => {
+          console.log('[HomeScreen] Error fetching restaurant info:', err.message);
+          return null;
+        }),
       ]);
       setReviews(reviewsData);
       setRestaurantInfo(infoData);
     } catch (error) {
-      console.log('Error fetching home data:', error);
+      console.log('[HomeScreen] General error fetching home data:', error);
     }
   };
 
@@ -138,15 +145,17 @@ export default function HomeScreen() {
         {/* Welcome Back (if logged in) */}
         {isAuthenticated && user && (
           <View style={styles.welcomeContainer}>
-            <View style={styles.welcomeBack}>
-              <Text style={styles.welcomeText}>Welcome back, {user.name}! 👋</Text>
+            <View style={styles.welcomeHeader}>
+              <View style={styles.welcomeBack}>
+                <Text style={styles.welcomeText}>Welcome back, {user.name}! 👋</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.logoutButton}
+                onPress={() => signOut()}
+              >
+                <Text style={styles.logoutButtonText}>Logout</Text>
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity
-              style={styles.logoutButton}
-              onPress={() => signOut()}
-            >
-              <Text style={styles.logoutButtonText}>Logout</Text>
-            </TouchableOpacity>
 
             {/* Admin Dashboard - only for ADMIN role */}
             {user?.role === 'ADMIN' && (
@@ -164,27 +173,29 @@ export default function HomeScreen() {
           </View>
         )}
 
-        {/* Quick Actions */}
-        <View style={styles.quickActions}>
-          <Link href="/(tabs)/menu" asChild>
-            <TouchableOpacity style={styles.quickAction}>
-              <Text style={styles.quickActionIcon}>🍽️</Text>
-              <Text style={styles.quickActionText}>View Menu</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/(tabs)/reservation" asChild>
-            <TouchableOpacity style={styles.quickAction}>
-              <Text style={styles.quickActionIcon}>📅</Text>
-              <Text style={styles.quickActionText}>Book Table</Text>
-            </TouchableOpacity>
-          </Link>
-          <Link href="/(tabs)/order" asChild>
-            <TouchableOpacity style={styles.quickAction}>
-              <Text style={styles.quickActionIcon}>🛒</Text>
-              <Text style={styles.quickActionText}>Order Now</Text>
-            </TouchableOpacity>
-          </Link>
-        </View>
+        {/* Quick Actions (Hidden for Admin) */}
+        {user?.role !== 'ADMIN' && (
+          <View style={styles.quickActions}>
+            <Link href="/(tabs)/menu" asChild>
+              <TouchableOpacity style={styles.quickAction}>
+                <Text style={styles.quickActionIcon}>🍽️</Text>
+                <Text style={styles.quickActionText}>View Menu</Text>
+              </TouchableOpacity>
+            </Link>
+            <Link href="/(tabs)/reservation" asChild>
+              <TouchableOpacity style={styles.quickAction}>
+                <Text style={styles.quickActionIcon}>📅</Text>
+                <Text style={styles.quickActionText}>Book Table</Text>
+              </TouchableOpacity>
+            </Link>
+            <Link href="/(tabs)/order" asChild>
+              <TouchableOpacity style={styles.quickAction}>
+                <Text style={styles.quickActionIcon}>🛒</Text>
+                <Text style={styles.quickActionText}>Order Now</Text>
+              </TouchableOpacity>
+            </Link>
+          </View>
+        )}
 
         {/* Latest Reviews Section */}
         <View style={styles.section}>
@@ -230,8 +241,8 @@ export default function HomeScreen() {
         </View>
       </ScrollView>
 
-      {/* Floating Call Button */}
-      <CallUsButton phone={restaurantInfo?.phone} />
+      {/* Floating Call Button (Hidden for Admin) */}
+      {user?.role !== 'ADMIN' && <CallUsButton phone={restaurantInfo?.phone} />}
     </View>
   );
 }
@@ -315,13 +326,16 @@ const styles = StyleSheet.create({
     color: Colors.primary,
   },
   welcomeContainer: {
+    paddingHorizontal: Spacing.screenPadding,
+    marginBottom: 8,
+  },
+  welcomeHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingRight: Spacing.screenPadding,
+    paddingVertical: 8,
   },
   welcomeBack: {
-    padding: Spacing.screenPadding,
     flex: 1,
   },
   welcomeText: {

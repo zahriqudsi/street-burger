@@ -29,7 +29,7 @@ export default function WelcomeScreen() {
     }, []);
 
     const handleGetStarted = () => {
-        router.replace('/');
+        router.replace('/(tabs)');
     };
 
     return (

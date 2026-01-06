@@ -7,7 +7,10 @@ import { Spacing } from '@/src/constants/spacing';
 import { Typography } from '@/src/constants/typography';
 import { notificationService } from '@/src/services';
 import { Notification } from '@/src/types';
+import { useNotifications } from '@/src/contexts/NotificationContext';
 import React, { useEffect, useState } from 'react';
+import { Stack } from 'expo-router';
+import BackButton from '@/components/BackButton';
 import {
     FlatList,
     RefreshControl,
@@ -17,7 +20,11 @@ import {
     View,
 } from 'react-native';
 
-// Notification Card
+// Notification- [x] Clear and re-populate final menu (50 items)
+// - [x] Implement `NotificationContext` for unread tracking
+// - [x] Add notification badge to header
+// - [ ] Create Admin User management screen [/]
+// - [ ] Implement Gallery and Chefs screens [/]
 const NotificationCard = ({
     notification,
     onPress,
@@ -63,6 +70,7 @@ const NotificationCard = ({
 };
 
 export default function InboxScreen() {
+    const { markRead } = useNotifications();
     const [notifications, setNotifications] = useState<Notification[]>([]);
     const [refreshing, setRefreshing] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -91,7 +99,7 @@ export default function InboxScreen() {
     const handleNotificationPress = async (notification: Notification) => {
         if (!notification.isRead) {
             try {
-                await notificationService.markAsRead(notification.id);
+                await markRead(notification.id);
                 setNotifications((prev) =>
                     prev.map((n) =>
                         n.id === notification.id ? { ...n, isRead: true } : n
@@ -115,6 +123,10 @@ export default function InboxScreen() {
 
     return (
         <View style={styles.container}>
+            <Stack.Screen options={{
+                title: 'Notifications',
+                headerLeft: () => <BackButton />
+            }} />
             <FlatList
                 data={notifications}
                 keyExtractor={(item) => item.id.toString()}

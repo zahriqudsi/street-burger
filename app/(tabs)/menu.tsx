@@ -7,6 +7,7 @@ import { Spacing } from '@/src/constants/spacing';
 import { Typography } from '@/src/constants/typography';
 import { menuService, restaurantService } from '@/src/services';
 import { MenuCategory, MenuItem, RestaurantInfo } from '@/src/types';
+import { formatRs } from '@/src/utils/format';
 import React, { useEffect, useState } from 'react';
 import {
     Linking,
@@ -15,14 +16,23 @@ import {
     StyleSheet,
     Text,
     TouchableOpacity,
-    View
+    View,
+    Image
 } from 'react-native';
 
 // Menu Item Card
 const MenuItemCard = ({ item }: { item: MenuItem }) => (
     <View style={styles.menuItem}>
         <View style={styles.menuItemImage}>
-            <Text style={styles.menuItemEmoji}>🍔</Text>
+            {item.imageUrl ? (
+                <Image
+                    source={{ uri: item.imageUrl.startsWith('http') ? item.imageUrl : `file://${item.imageUrl}` }}
+                    style={styles.menuItemImageActual}
+                    resizeMode="cover"
+                />
+            ) : (
+                <Text style={styles.menuItemEmoji}>🍔</Text>
+            )}
         </View>
         <View style={styles.menuItemContent}>
             <View style={styles.menuItemHeader}>
@@ -36,7 +46,7 @@ const MenuItemCard = ({ item }: { item: MenuItem }) => (
             <Text style={styles.menuItemDescription} numberOfLines={2}>
                 {item.description}
             </Text>
-            <Text style={styles.menuItemPrice}>Rs. {item.price.toFixed(2)}</Text>
+            <Text style={styles.menuItemPrice}>{formatRs(item.price)}</Text>
         </View>
     </View>
 );
@@ -240,6 +250,11 @@ const styles = StyleSheet.create({
     },
     menuItemEmoji: {
         fontSize: 36,
+    },
+    menuItemImageActual: {
+        width: '100%',
+        height: '100%',
+        borderRadius: Spacing.borderRadius.md,
     },
     menuItemContent: {
         flex: 1,

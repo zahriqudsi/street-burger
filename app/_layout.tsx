@@ -10,6 +10,7 @@ import 'react-native-reanimated';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { Colors } from '@/src/constants/colors';
 import { AuthProvider } from '@/src/contexts/AuthContext';
+import { NotificationProvider } from '@/src/contexts/NotificationContext';
 
 // Custom theme based on Street Burger brand
 const StreetBurgerLightTheme = {
@@ -37,7 +38,7 @@ const StreetBurgerDarkTheme = {
 };
 
 export const unstable_settings = {
-  initialRouteName: 'splash',
+  initialRouteName: 'index',
 };
 
 export default function RootLayout() {
@@ -46,24 +47,33 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <ThemeProvider value={theme}>
-        <Stack screenOptions={{ headerShown: false }}>
-          <Stack.Screen name="splash" />
-          <Stack.Screen name="welcome" />
-          <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(tabs)" />
-          <Stack.Screen name="admin" />
-          <Stack.Screen
-            name="inbox/index"
-            options={{
-              headerShown: true,
-              title: 'Notifications',
-              presentation: 'modal',
-            }}
-          />
-        </Stack>
-        <StatusBar style="auto" />
-      </ThemeProvider>
+      <NotificationProvider>
+        <ThemeProvider value={theme}>
+          <Stack screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="index" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="welcome" options={{ gestureEnabled: false }} />
+            <Stack.Screen name="(auth)" />
+            <Stack.Screen name="(tabs)" />
+            <Stack.Screen name="admin" />
+            <Stack.Screen
+              name="profile"
+              options={{
+                headerShown: true,
+                title: 'Account Settings',
+              }}
+            />
+            <Stack.Screen
+              name="inbox/index"
+              options={{
+                headerShown: true,
+                title: 'Notifications',
+                presentation: 'modal',
+              }}
+            />
+          </Stack>
+          <StatusBar style="auto" />
+        </ThemeProvider>
+      </NotificationProvider>
     </AuthProvider>
   );
 }

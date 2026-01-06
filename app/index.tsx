@@ -1,5 +1,5 @@
 /**
- * Street Burger - Splash Screen
+ * Street Burger - App Entry / Splash Screen
  */
 
 import { Colors } from '@/src/constants/colors';

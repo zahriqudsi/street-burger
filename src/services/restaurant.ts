@@ -1,28 +1,39 @@
-/**
- * Street Burger - Restaurant API Service
- */
-
 import api from '../config/api';
-import { ApiResponse, Chef, GalleryImage, RestaurantInfo } from '../types';
+
+export interface RestaurantInfo {
+    id: number;
+    name: string;
+    address: string;
+    phone: string;
+    email: string;
+    openingHours: string;
+    aboutUs: string;
+    latitude: number;
+    longitude: number;
+    facebookUrl: string;
+    instagramUrl: string;
+    uberEatsUrl: string;
+    pickmeFoodUrl: string;
+}
 
 export const restaurantService = {
-    // Get restaurant info
-    getInfo: async (): Promise<RestaurantInfo | null> => {
-        const response = await api.get<ApiResponse<RestaurantInfo[]>>('/restaurant-info/get/all');
-        return response.data.data.length > 0 ? response.data.data[0] : null;
+    getAll: async () => {
+        const response = await api.get('/restaurant-info/get/all');
+        return response.data;
     },
 
-    // Get gallery images
-    getGallery: async (): Promise<GalleryImage[]> => {
-        const response = await api.get<ApiResponse<GalleryImage[]>>('/gallery');
-        return response.data.data;
+    getById: async (id: number) => {
+        const response = await api.get(`/restaurant-info/get/${id}`);
+        return response.data;
     },
 
-    // Get chefs
-    getChefs: async (): Promise<Chef[]> => {
-        const response = await api.get<ApiResponse<Chef[]>>('/chefs');
-        return response.data.data;
+    update: async (id: number, data: Partial<RestaurantInfo>) => {
+        const response = await api.put(`/restaurant-info/update/${id}`, data);
+        return response.data;
     },
+
+    getInfo: async () => {
+        const response = await api.get('/restaurant-info/get/all');
+        return response.data.data[0];
+    }
 };
-
-export default restaurantService;
