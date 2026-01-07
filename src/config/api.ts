@@ -7,7 +7,8 @@ import * as SecureStore from 'expo-secure-store';
 
 // API Base URL - Change this to your backend URL
 // export const API_BASE_URL = 'http://localhost:8080';
-export const API_BASE_URL = 'http://192.168.92.121:8080';
+// export const API_BASE_URL = 'http://192.168.92.121:8080';
+export const API_BASE_URL = 'http://192.168.92.121:8080/api';
 
 // Token storage key
 export const TOKEN_KEY = 'street_burger_jwt_token';
