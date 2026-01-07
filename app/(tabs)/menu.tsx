@@ -17,39 +17,56 @@ import {
     Text,
     TouchableOpacity,
     View,
-    Image
+    Image,
+    Platform
 } from 'react-native';
+import { useRouter } from 'expo-router';
+import { useCart } from '@/src/contexts/CartContext';
+import { Ionicons } from '@expo/vector-icons';
 
 // Menu Item Card
-const MenuItemCard = ({ item }: { item: MenuItem }) => (
-    <View style={styles.menuItem}>
-        <View style={styles.menuItemImage}>
-            {item.imageUrl ? (
-                <Image
-                    source={{ uri: item.imageUrl.startsWith('http') ? item.imageUrl : `file://${item.imageUrl}` }}
-                    style={styles.menuItemImageActual}
-                    resizeMode="cover"
-                />
-            ) : (
-                <Text style={styles.menuItemEmoji}>🍔</Text>
-            )}
-        </View>
-        <View style={styles.menuItemContent}>
-            <View style={styles.menuItemHeader}>
-                <Text style={styles.menuItemTitle}>{item.title}</Text>
-                {item.isPopular && (
-                    <View style={styles.popularBadge}>
-                        <Text style={styles.popularBadgeText}>Popular</Text>
-                    </View>
+const MenuItemCard = ({ item }: { item: MenuItem }) => {
+    const { addToCart } = useCart();
+
+    return (
+        <View style={styles.menuItem}>
+            <View style={styles.menuItemImage}>
+                {item.imageUrl ? (
+                    <Image
+                        source={{ uri: item.imageUrl.startsWith('http') ? item.imageUrl : `file://${item.imageUrl}` }}
+                        style={styles.menuItemImageActual}
+                        resizeMode="cover"
+                    />
+                ) : (
+                    <Text style={styles.menuItemEmoji}>🍔</Text>
                 )}
             </View>
-            <Text style={styles.menuItemDescription} numberOfLines={2}>
-                {item.description}
-            </Text>
-            <Text style={styles.menuItemPrice}>{formatRs(item.price)}</Text>
+            <View style={styles.menuItemContent}>
+                <View style={styles.menuItemHeader}>
+                    <Text style={styles.menuItemTitle}>{item.title}</Text>
+                    {item.isPopular && (
+                        <View style={styles.popularBadge}>
+                            <Text style={styles.popularBadgeText}>Popular</Text>
+                        </View>
+                    )}
+                </View>
+                <Text style={styles.menuItemDescription} numberOfLines={2}>
+                    {item.description}
+                </Text>
+                <View style={styles.itemFooter}>
+                    <Text style={styles.menuItemPrice}>{formatRs(item.price)}</Text>
+                    <TouchableOpacity
+                        style={styles.addButton}
+                        onPress={() => addToCart(item)}
+                    >
+                        <Ionicons name="add" size={20} color="#FFF" />
+                        <Text style={styles.addButtonText}>Add</Text>
+                    </TouchableOpacity>
+                </View>
+            </View>
         </View>
-    </View>
-);
+    );
+};
 
 // Order Modal Buttons
 const OrderButtons = ({ info }: { info: RestaurantInfo | null }) => (
@@ -186,11 +203,37 @@ export default function MenuScreen() {
                 )}
 
                 {/* Order Section */}
-                <OrderButtons info={restaurantInfo} />
+                {/* External Options (Optional) */}
+                {/* <OrderButtons info={restaurantInfo} /> */}
             </ScrollView>
+
+            {/* Floating Cart Button */}
+            <FloatingCartButton />
         </View>
     );
 }
+
+const FloatingCartButton = () => {
+    const { count, subtotal } = useCart();
+    const router = useRouter();
+
+    if (count === 0) return null;
+
+    return (
+        <View style={styles.floatContainer}>
+            <TouchableOpacity
+                style={styles.floatButton}
+                onPress={() => router.push('/cart')}
+            >
+                <View style={styles.floatBadge}>
+                    <Text style={styles.floatBadgeText}>{count}</Text>
+                </View>
+                <Text style={styles.floatText}>View Basket</Text>
+                <Text style={styles.floatPrice}>{formatRs(subtotal)}</Text>
+            </TouchableOpacity>
+        </View>
+    );
+};
 
 const styles = StyleSheet.create({
     container: {
@@ -289,6 +332,27 @@ const styles = StyleSheet.create({
     menuItemPrice: {
         ...Typography.styles.price,
         color: Colors.primary,
+        fontSize: 16,
+    },
+    itemFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 8,
+    },
+    addButton: {
+        backgroundColor: Colors.primary,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 12,
+        paddingVertical: 6,
+        borderRadius: 20,
+        gap: 4,
+    },
+    addButtonText: {
+        color: '#FFF',
+        fontWeight: 'bold',
+        fontSize: 12,
     },
     orderSection: {
         marginTop: 24,
@@ -342,5 +406,47 @@ const styles = StyleSheet.create({
     emptyText: {
         ...Typography.styles.body,
         color: Colors.light.textSecondary,
+    },
+    floatContainer: {
+        position: 'absolute',
+        bottom: 90, // Raised to clear the Floating Tab Bar (20 + 60 + 10)
+        left: 20,
+        right: 20,
+    },
+    floatButton: {
+        backgroundColor: Colors.primary,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 16,
+        borderRadius: 16,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 5,
+    },
+    floatBadge: {
+        backgroundColor: '#FFF',
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    floatBadgeText: {
+        color: Colors.primary,
+        fontWeight: 'bold',
+        fontSize: 12,
+    },
+    floatText: {
+        color: '#FFF',
+        fontWeight: 'bold',
+        fontSize: 16,
+    },
+    floatPrice: {
+        color: '#FFF',
+        fontWeight: 'bold',
+        fontSize: 16,
     },
 });

@@ -79,6 +79,22 @@ export default function ProfileScreen() {
                         </View>
                     </View>
 
+                    {/* Quick Access */}
+                    <View style={styles.quickAccess}>
+                        <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/(tabs)/order')}>
+                            <View style={[styles.quickIcon, { backgroundColor: '#E3F2FD' }]}>
+                                <Ionicons name="receipt" size={24} color={Colors.primary} />
+                            </View>
+                            <Text style={styles.quickText}>My Orders</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity style={styles.quickBtn} onPress={() => router.push('/cart')}>
+                            <View style={[styles.quickIcon, { backgroundColor: '#E8F5E9' }]}>
+                                <Ionicons name="cart" size={24} color="#2E7D32" />
+                            </View>
+                            <Text style={styles.quickText}>My Basket</Text>
+                        </TouchableOpacity>
+                    </View>
+
                     {/* Form Section */}
                     <View style={styles.formContainer}>
                         <View style={styles.inputGroup}>
@@ -300,5 +316,36 @@ const styles = StyleSheet.create({
         color: '#718096',
         fontSize: 16,
         fontWeight: '600',
+    },
+    quickAccess: {
+        flexDirection: 'row',
+        paddingHorizontal: 24,
+        marginTop: 20,
+        gap: 16,
+    },
+    quickBtn: {
+        flex: 1,
+        backgroundColor: '#FFF',
+        padding: 16,
+        borderRadius: 20,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 5,
+        elevation: 2,
+    },
+    quickIcon: {
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 8,
+    },
+    quickText: {
+        fontWeight: 'bold',
+        color: '#2D3748',
+        fontSize: 14,
     },
 });

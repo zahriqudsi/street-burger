@@ -1,15 +1,20 @@
 /**
- * Street Burger - Order Screen
+ * Street Burger - My Orders Screen
  */
 
 import { Colors } from '@/src/constants/colors';
 import { Spacing } from '@/src/constants/spacing';
 import { Typography } from '@/src/constants/typography';
-import { restaurantService } from '@/src/services';
-import { RestaurantInfo } from '@/src/types';
+import { useAuth } from '@/src/contexts/AuthContext';
+import { orderService } from '@/src/services/orders';
+import { Order } from '@/src/types';
+import { formatRs } from '@/src/utils/format';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import {
-    Linking,
+    ActivityIndicator,
+    RefreshControl,
     ScrollView,
     StyleSheet,
     Text,
@@ -17,139 +22,131 @@ import {
     View,
 } from 'react-native';
 
-const DeliveryOption = ({
-    icon,
-    title,
-    subtitle,
-    color,
-    onPress,
-}: {
-    icon: string;
-    title: string;
-    subtitle: string;
-    color: string;
-    onPress: () => void;
-}) => (
-    <TouchableOpacity style={[styles.deliveryCard, { borderColor: color }]} onPress={onPress}>
-        <View style={[styles.deliveryIcon, { backgroundColor: color }]}>
-            <Text style={styles.deliveryIconText}>{icon}</Text>
-        </View>
-        <View style={styles.deliveryContent}>
-            <Text style={styles.deliveryTitle}>{title}</Text>
-            <Text style={styles.deliverySubtitle}>{subtitle}</Text>
-        </View>
-        <Text style={styles.deliveryArrow}>→</Text>
-    </TouchableOpacity>
-);
+const STATUS_COLORS: Record<string, string> = {
+    PENDING: '#FFA502',
+    CONFIRMED: '#2ED573',
+    PREPARING: '#1E90FF',
+    OUT_FOR_DELIVERY: '#70A1FF',
+    READY_FOR_PICKUP: '#2ED573',
+    DELIVERED: '#7bed9f',
+    COMPLETED: '#2f3542',
+    CANCELLED: '#FF4757',
+};
 
 export default function OrderScreen() {
-    const [restaurantInfo, setRestaurantInfo] = useState<RestaurantInfo | null>(null);
+    const { isAuthenticated } = useAuth();
+    const router = useRouter();
+    const [orders, setOrders] = useState<Order[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [refreshing, setRefreshing] = useState(false);
 
-    useEffect(() => {
-        const fetchInfo = async () => {
-            try {
-                const info = await restaurantService.getInfo();
-                setRestaurantInfo(info);
-            } catch (error) {
-                console.log('Error fetching restaurant info:', error);
-            }
-        };
-        fetchInfo();
-    }, []);
-
-    const openUrl = (url?: string) => {
-        if (url) {
-            Linking.openURL(url);
-        } else {
-            Linking.openURL('https://www.ubereats.com');
+    const fetchOrders = async () => {
+        try {
+            const data = await orderService.getMyOrders();
+            setOrders(data || []);
+        } catch (error) {
+            console.log('Error fetching orders:', error);
+        } finally {
+            setLoading(false);
         }
     };
 
-    return (
-        <ScrollView style={styles.container} contentContainerStyle={styles.content}>
-            {/* Header */}
-            <View style={styles.header}>
-                <Text style={styles.headerEmoji}>🛒</Text>
-                <Text style={styles.headerTitle}>Order Online</Text>
-                <Text style={styles.headerSubtitle}>
-                    Get your favorite Street Burger delivered right to your doorstep!
-                </Text>
-            </View>
+    useEffect(() => {
+        if (isAuthenticated) {
+            fetchOrders();
+        } else {
+            setLoading(false);
+        }
+    }, [isAuthenticated]);
 
-            {/* Delivery Options */}
-            <View style={styles.options}>
-                <DeliveryOption
-                    icon="🚗"
-                    title="Uber Eats"
-                    subtitle="Fast delivery, easy tracking"
-                    color="#06C167"
-                    onPress={() => openUrl(restaurantInfo?.uberEatsUrl)}
-                />
+    const onRefresh = async () => {
+        setRefreshing(true);
+        if (isAuthenticated) await fetchOrders();
+        setRefreshing(false);
+    };
 
-                <DeliveryOption
-                    icon="🛵"
-                    title="PickMe Food"
-                    subtitle="Local delivery service"
-                    color="#FF5722"
-                    onPress={() => openUrl(restaurantInfo?.pickmeFoodUrl)}
-                />
-            </View>
-
-            {/* Info Section */}
-            <View style={styles.infoSection}>
-                <Text style={styles.infoTitle}>How It Works</Text>
-
-                <View style={styles.step}>
-                    <View style={styles.stepNumber}>
-                        <Text style={styles.stepNumberText}>1</Text>
-                    </View>
-                    <View style={styles.stepContent}>
-                        <Text style={styles.stepTitle}>Choose Your Platform</Text>
-                        <Text style={styles.stepDesc}>
-                            Select Uber Eats or PickMe Food based on your preference
-                        </Text>
-                    </View>
-                </View>
-
-                <View style={styles.step}>
-                    <View style={styles.stepNumber}>
-                        <Text style={styles.stepNumberText}>2</Text>
-                    </View>
-                    <View style={styles.stepContent}>
-                        <Text style={styles.stepTitle}>Browse & Order</Text>
-                        <Text style={styles.stepDesc}>
-                            Browse our full menu and add items to your cart
-                        </Text>
-                    </View>
-                </View>
-
-                <View style={styles.step}>
-                    <View style={styles.stepNumber}>
-                        <Text style={styles.stepNumberText}>3</Text>
-                    </View>
-                    <View style={styles.stepContent}>
-                        <Text style={styles.stepTitle}>Enjoy Your Meal</Text>
-                        <Text style={styles.stepDesc}>
-                            Sit back and enjoy fresh Street Burger at home!
-                        </Text>
-                    </View>
-                </View>
-            </View>
-
-            {/* Call to Action */}
-            <View style={styles.callSection}>
-                <Text style={styles.callTitle}>Prefer to call?</Text>
-                <TouchableOpacity
-                    style={styles.callButton}
-                    onPress={() => restaurantInfo?.phone && Linking.openURL(`tel:${restaurantInfo.phone}`)}
-                >
-                    <Text style={styles.callButtonIcon}>📞</Text>
-                    <Text style={styles.callButtonText}>
-                        {restaurantInfo?.phone || 'Call Us'}
-                    </Text>
+    if (!isAuthenticated) {
+        return (
+            <View style={styles.centerContainer}>
+                <Ionicons name="lock-closed-outline" size={64} color={Colors.light.textSecondary} />
+                <Text style={styles.emptyText}>Please login to view orders</Text>
+                <TouchableOpacity style={styles.loginBtn} onPress={() => router.push('/(auth)/login')}>
+                    <Text style={styles.loginBtnText}>Login</Text>
                 </TouchableOpacity>
             </View>
-        </ScrollView>
+        );
+    }
+
+    if (loading) {
+        return (
+            <View style={styles.centerContainer}>
+                <ActivityIndicator size="large" color={Colors.primary} />
+            </View>
+        );
+    }
+
+    return (
+        <View style={styles.container}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.content}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+            >
+                {orders.length === 0 ? (
+                    <View style={styles.emptyState}>
+                        <Ionicons name="receipt-outline" size={64} color={Colors.light.textSecondary} />
+                        <Text style={styles.emptyText}>No orders yet</Text>
+                        <TouchableOpacity style={styles.shopBtn} onPress={() => router.push('/(tabs)/menu')}>
+                            <Text style={styles.shopBtnText}>Browse Menu</Text>
+                        </TouchableOpacity>
+                    </View>
+                ) : (
+                    orders.map((order) => (
+                        <View key={order.id} style={styles.orderCard}>
+                            <View style={styles.cardHeader}>
+                                <View>
+                                    <Text style={styles.orderId}>Order #{order.id}</Text>
+                                    <Text style={styles.orderDate}>
+                                        {new Date(order.createdAt).toLocaleDateString()} • {new Date(order.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </Text>
+                                </View>
+                                <View style={[styles.statusBadge, { backgroundColor: STATUS_COLORS[order.status] || '#CCC' }]}>
+                                    <Text style={styles.statusText}>{order.status.replace(/_/g, ' ')}</Text>
+                                </View>
+                            </View>
+
+                            <View style={styles.divider} />
+
+                            <View style={styles.itemsList}>
+                                {order.items?.map((item) => (
+                                    <View key={item.id} style={styles.itemRow}>
+                                        <Text style={styles.itemQty}>{item.quantity}x</Text>
+                                        <Text style={styles.itemName} numberOfLines={1}>
+                                            {item.menuItem?.title || 'Unknown Item'}
+                                        </Text>
+                                        <Text style={styles.itemPrice}>{formatRs(item.price * item.quantity)}</Text>
+                                    </View>
+                                ))}
+                            </View>
+
+                            <View style={styles.divider} />
+
+                            <View style={styles.cardFooter}>
+                                <View style={styles.typeBadge}>
+                                    <Ionicons
+                                        name={order.orderType === 'DELIVERY' ? 'bicycle' : 'restaurant'}
+                                        size={12}
+                                        color={Colors.light.textSecondary}
+                                    />
+                                    <Text style={styles.typeText}>{order.orderType}</Text>
+                                </View>
+                                <Text style={styles.totalAmount}>{formatRs(order.totalAmount)}</Text>
+                            </View>
+                        </View>
+                    ))
+                )}
+            </ScrollView>
+        </View>
     );
 }
 
@@ -158,138 +155,128 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.light.background,
     },
+    centerContainer: {
+        flex: 1,
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: Colors.light.background,
+    },
+    scrollView: {
+        flex: 1,
+    },
     content: {
         padding: Spacing.screenPadding,
-        paddingBottom: 100,
     },
-    header: {
+    emptyState: {
         alignItems: 'center',
-        marginBottom: 32,
-        paddingTop: 20,
+        marginTop: 60,
     },
-    headerEmoji: {
-        fontSize: 48,
-        marginBottom: 12,
-    },
-    headerTitle: {
-        ...Typography.styles.h2,
-        color: Colors.light.text,
-        marginBottom: 8,
-    },
-    headerSubtitle: {
+    emptyText: {
         ...Typography.styles.body,
         color: Colors.light.textSecondary,
-        textAlign: 'center',
-    },
-    options: {
-        gap: 16,
-        marginBottom: 32,
-    },
-    deliveryCard: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: Colors.light.surface,
-        padding: 20,
-        borderRadius: Spacing.borderRadius.xl,
-        borderWidth: 2,
-        ...Spacing.shadow.md,
-    },
-    deliveryIcon: {
-        width: 56,
-        height: 56,
-        borderRadius: 28,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 16,
-    },
-    deliveryIconText: {
-        fontSize: 28,
-    },
-    deliveryContent: {
-        flex: 1,
-    },
-    deliveryTitle: {
-        ...Typography.styles.h4,
-        color: Colors.light.text,
-        marginBottom: 2,
-    },
-    deliverySubtitle: {
-        ...Typography.styles.bodySmall,
-        color: Colors.light.textSecondary,
-    },
-    deliveryArrow: {
-        fontSize: 24,
-        color: Colors.light.textTertiary,
-    },
-    infoSection: {
-        backgroundColor: Colors.light.surface,
-        padding: Spacing.cardPadding,
-        borderRadius: Spacing.borderRadius.xl,
+        marginTop: 16,
         marginBottom: 24,
+    },
+    loginBtn: {
+        backgroundColor: Colors.primary,
+        paddingHorizontal: 32,
+        paddingVertical: 12,
+        borderRadius: 24,
+    },
+    loginBtnText: {
+        color: '#FFF',
+        fontWeight: 'bold',
+    },
+    shopBtn: {
+        backgroundColor: Colors.primary,
+        paddingHorizontal: 24,
+        paddingVertical: 12,
+        borderRadius: 24,
+    },
+    shopBtnText: {
+        color: '#FFF',
+        fontWeight: 'bold',
+    },
+    orderCard: {
+        backgroundColor: Colors.light.surface,
+        borderRadius: 16,
+        padding: 16,
+        marginBottom: 16,
         ...Spacing.shadow.sm,
     },
-    infoTitle: {
+    cardHeader: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+    },
+    orderId: {
         ...Typography.styles.h5,
         color: Colors.light.text,
-        marginBottom: 20,
-        textAlign: 'center',
     },
-    step: {
-        flexDirection: 'row',
-        marginBottom: 16,
-    },
-    stepNumber: {
-        width: 32,
-        height: 32,
-        borderRadius: 16,
-        backgroundColor: Colors.primary,
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginRight: 12,
-    },
-    stepNumberText: {
-        color: '#FFFFFF',
-        fontWeight: '700',
-        fontSize: 16,
-    },
-    stepContent: {
-        flex: 1,
-    },
-    stepTitle: {
-        ...Typography.styles.label,
-        color: Colors.light.text,
-        marginBottom: 2,
-    },
-    stepDesc: {
-        ...Typography.styles.bodySmall,
+    orderDate: {
+        ...Typography.styles.caption,
         color: Colors.light.textSecondary,
+        marginTop: 4,
     },
-    callSection: {
-        alignItems: 'center',
-        padding: 20,
-        backgroundColor: Colors.light.surface,
-        borderRadius: Spacing.borderRadius.xl,
-        ...Spacing.shadow.sm,
+    statusBadge: {
+        paddingHorizontal: 10,
+        paddingVertical: 4,
+        borderRadius: 8,
     },
-    callTitle: {
-        ...Typography.styles.body,
-        color: Colors.light.textSecondary,
-        marginBottom: 12,
+    statusText: {
+        color: '#FFF',
+        fontSize: 10,
+        fontWeight: 'bold',
+        textTransform: 'uppercase',
     },
-    callButton: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: Colors.success,
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: Spacing.borderRadius.lg,
+    divider: {
+        height: 1,
+        backgroundColor: '#F1F2F6',
+        marginVertical: 12,
+    },
+    itemsList: {
         gap: 8,
     },
-    callButtonIcon: {
-        fontSize: 20,
+    itemRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
     },
-    callButtonText: {
-        ...Typography.styles.button,
-        color: '#FFFFFF',
+    itemQty: {
+        width: 24,
+        fontWeight: 'bold',
+        color: Colors.primary,
+    },
+    itemName: {
+        flex: 1,
+        fontSize: 14,
+        color: Colors.light.text,
+    },
+    itemPrice: {
+        fontSize: 14,
+        color: Colors.light.textSecondary,
+    },
+    cardFooter: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginTop: 4,
+    },
+    typeBadge: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        backgroundColor: '#F1F2F6',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 6,
+        gap: 4,
+    },
+    typeText: {
+        fontSize: 10,
+        color: Colors.light.textSecondary,
+        fontWeight: '600',
+    },
+    totalAmount: {
+        ...Typography.styles.h5,
+        color: Colors.primary,
     },
 });

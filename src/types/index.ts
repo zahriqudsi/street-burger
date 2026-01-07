@@ -183,7 +183,29 @@ export interface AuthState {
 }
 
 export type AuthAction =
-    | { type: 'RESTORE_TOKEN'; token: string | null; user: User | null }
-    | { type: 'SIGN_IN'; token: string; user: User }
     | { type: 'SIGN_OUT' }
     | { type: 'UPDATE_USER'; user: User };
+
+// Order Types
+export type OrderStatus = 'PENDING' | 'CONFIRMED' | 'PREPARING' | 'OUT_FOR_DELIVERY' | 'READY_FOR_PICKUP' | 'DELIVERED' | 'COMPLETED' | 'CANCELLED';
+
+export interface OrderItem {
+    id: number;
+    menuItem: MenuItem;
+    quantity: number;
+    price: number;
+}
+
+export interface Order {
+    id: number;
+    user: User;
+    items: OrderItem[];
+    totalAmount: number;
+    status: OrderStatus;
+    orderType: 'DELIVERY' | 'PICKUP' | 'DINE_IN';
+    phoneNumber: string;
+    deliveryAddress?: string;
+    notes?: string;
+    createdAt: string;
+    updatedAt: string;
+}

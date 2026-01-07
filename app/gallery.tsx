@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator, Dimensions } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { galleryService } from '../src/services';
@@ -40,12 +41,15 @@ export default function GalleryScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Stack.Screen options={{
+                headerShown: true,
                 title: 'Our Gallery',
-                headerTransparent: true,
-                headerTintColor: '#FFF',
-                headerLeft: () => <BackButton light={true} />
+                headerTitleStyle: { color: '#fff' },
+                headerStyle: { backgroundColor: '#000' },
+                headerTransparent: false,
+                headerTintColor: '#000',
+                headerLeft: () => <BackButton />
             }} />
             <ScrollView showsVerticalScrollIndicator={false}>
                 {/* Hero Section */}
@@ -53,6 +57,10 @@ export default function GalleryScreen() {
                     <Image
                         source={{ uri: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070' }}
                         style={styles.heroImage}
+                    />
+                    <LinearGradient
+                        colors={['rgba(0,0,0,0.6)', 'transparent']}
+                        style={styles.heroTopGradient}
                     />
                     <View style={styles.heroOverlay}>
                         <Text style={styles.heroTitle}>Savor the Moments</Text>
@@ -86,7 +94,7 @@ export default function GalleryScreen() {
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
@@ -100,6 +108,13 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.4)',
         justifyContent: 'flex-end',
         padding: 24,
+    },
+    heroTopGradient: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 120,
     },
     heroTitle: { fontSize: 32, fontWeight: 'bold', color: '#FFF', marginBottom: 8 },
     heroSubtitle: { fontSize: 16, color: '#E2E8F0', fontWeight: '500' },

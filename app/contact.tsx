@@ -69,7 +69,12 @@ export default function ContactScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <Stack.Screen options={{
+                headerShown: true,
                 title: 'Contact Us',
+                headerTitleStyle: { color: '#fff' },
+                headerStyle: { backgroundColor: '#000' },
+                headerTransparent: false,
+                headerTintColor: '#000',
                 headerLeft: () => <BackButton />
             }} />
 

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { LinearGradient } from 'expo-linear-gradient';
 import { StyleSheet, View, Text, ScrollView, Image, ActivityIndicator } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { chefService } from '../src/services';
@@ -12,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 export default function ChefsScreen() {
     const [chefs, setChefs] = useState<Chef[]>([]);
     const [loading, setLoading] = useState(true);
+    const HEADER_HEIGHT = 350;
 
     useEffect(() => {
         fetchChefs();
@@ -37,26 +39,34 @@ export default function ChefsScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Stack.Screen options={{
+                headerShown: true,
                 title: 'Meet Our Chefs',
-                headerTransparent: true,
-                headerTintColor: '#FFF',
-                headerLeft: () => <BackButton light={true} />
+                headerTitleStyle: { color: '#fff' },
+                headerStyle: { backgroundColor: '#000' },
+                headerTransparent: false,
+                headerTintColor: '#000',
+                headerLeft: () => <BackButton />
             }} />
-            <ScrollView showsVerticalScrollIndicator={false}>
-                {/* Hero Section */}
-                <View style={styles.heroContainer}>
-                    <Image
-                        source={{ uri: 'https://images.unsplash.com/photo-1577214224216-7561146a5201?q=80&w=2070' }}
-                        style={styles.heroImage}
-                    />
-                    <View style={styles.heroOverlay}>
-                        <Text style={styles.heroTitle}>Our Culinary Masters</Text>
-                        <Text style={styles.heroSubtitle}>Dedicated to Perfection in Every Bite</Text>
-                    </View>
-                </View>
 
+            {/* Fixed Hero Section */}
+            <View style={[styles.heroContainer, { height: HEADER_HEIGHT }]}>
+                <Image
+                    source={{ uri: 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070' }}
+                    style={styles.heroImage}
+                />
+                {/* Gradient removed as requested for black text visibility context, or can be kept if user wants partial overlay. Assuming removal for clear black text/image separation or if image is light enough. */}
+                <View style={styles.heroOverlay}>
+                    <Text style={styles.heroTitle}>Our Culinary Masters</Text>
+                    <Text style={styles.heroSubtitle}>Dedicated to Perfection in Every Bite</Text>
+                </View>
+            </View>
+
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                contentContainerStyle={{ paddingTop: HEADER_HEIGHT }}
+            >
                 <View style={styles.content}>
                     {chefs.length > 0 ? (
                         chefs.map((chef) => (
@@ -83,20 +93,33 @@ export default function ChefsScreen() {
                     )}
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#FFF' },
     centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-    heroContainer: { height: 350, width: '100%' },
+    heroContainer: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: -1,
+    },
     heroImage: { width: '100%', height: '100%' },
     heroOverlay: {
         ...StyleSheet.absoluteFillObject,
         backgroundColor: 'rgba(0,0,0,0.4)',
         justifyContent: 'flex-end',
         padding: 24,
+    },
+    heroTopGradient: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        height: 120,
     },
     heroTitle: { fontSize: 32, fontWeight: 'bold', color: '#FFF', marginBottom: 8 },
     heroSubtitle: { fontSize: 16, color: '#E2E8F0', fontWeight: '500' },

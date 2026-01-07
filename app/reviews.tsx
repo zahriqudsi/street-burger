@@ -94,7 +94,12 @@ export default function ReviewsScreen() {
     return (
         <SafeAreaView style={styles.container}>
             <Stack.Screen options={{
+                headerShown: true,
                 title: 'Customer Reviews',
+                headerTitleStyle: { color: '#fff' },
+                headerStyle: { backgroundColor: '#000' },
+                headerTransparent: false,
+                headerTintColor: '#000',
                 headerLeft: () => <BackButton />
             }} />
 

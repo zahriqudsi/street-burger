@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const IP = '192.168.99.121';
+const IP = '192.168.93.121';
 const API_BASE_URL = `http://${IP}:8080`;
 
 const burgerImg = `${API_BASE_URL}/images/burger.png`;

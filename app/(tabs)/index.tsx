@@ -19,70 +19,14 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Platform,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { DraggableCallButton } from '@/components/DraggableCallButton';
 
 const { width } = Dimensions.get('window');
 
-// Login Banner Component
-const LoginBanner = () => {
-  const router = useRouter();
-
-  return (
-    <View style={styles.loginBanner}>
-      <View style={styles.loginBannerContent}>
-        <Text style={styles.loginBannerTitle}>Join Street Burger!</Text>
-        <Text style={styles.loginBannerSubtitle}>
-          Get exclusive rewards and make reservations
-        </Text>
-      </View>
-      <View style={styles.loginBannerButtons}>
-        <TouchableOpacity
-          style={styles.loginButton}
-          onPress={() => router.push('/(auth)/login')}
-        >
-          <Text style={styles.loginButtonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.signupButton}
-          onPress={() => router.push('/(auth)/signup')}
-        >
-          <Text style={styles.signupButtonText}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  );
-};
-
-// Review Card Component
-const ReviewCard = ({ review }: { review: Review }) => (
-  <View style={styles.reviewCard}>
-    <View style={styles.reviewHeader}>
-      <Text style={styles.reviewerName}>{review.reviewerName || 'Anonymous'}</Text>
-      <View style={styles.ratingContainer}>
-        {[...Array(5)].map((_, i) => (
-          <Text key={i} style={styles.star}>
-            {i < review.rating ? '⭐' : '☆'}
-          </Text>
-        ))}
-      </View>
-    </View>
-    <Text style={styles.reviewComment} numberOfLines={3}>
-      {review.comment}
-    </Text>
-  </View>
-);
-
-// Call Us Button Component
-const CallUsButton = ({ phone }: { phone?: string }) => (
-  <TouchableOpacity
-    style={styles.callButton}
-    onPress={() => phone && Linking.openURL(`tel:${phone}`)}
-  >
-    <Text style={styles.callButtonIcon}>📞</Text>
-    <Text style={styles.callButtonText}>Call Us</Text>
-  </TouchableOpacity>
-);
+// Helper components removed as they are now integrated directly or styles were updated.
 
 export default function HomeScreen() {
   const router = useRouter();
@@ -123,6 +67,30 @@ export default function HomeScreen() {
 
   return (
     <View style={styles.container}>
+      {/* Modern Header - Fixed at Top */}
+      <View style={styles.headerContainer}>
+        <View style={styles.headerTop}>
+          <View>
+            <Text style={styles.greetingText}>
+              {new Date().getHours() < 12 ? 'Good Morning' : 'Good Evening'}
+            </Text>
+            <Text style={styles.usersName}>
+              {isAuthenticated && user?.name ? user.name.split(' ')[0] : 'Guest'} 👋
+            </Text>
+          </View>
+          <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => router.push(isAuthenticated ? '/profile' : '/(auth)/login')}
+          >
+            {isAuthenticated ? (
+              <Text style={styles.avatarText}>👤</Text>
+            ) : (
+              <Ionicons name="log-in-outline" size={24} color="#718096" />
+            )}
+          </TouchableOpacity>
+        </View>
+      </View>
+
       <ScrollView
         style={styles.scrollView}
         contentContainerStyle={styles.scrollContent}
@@ -130,79 +98,64 @@ export default function HomeScreen() {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
       >
-        {/* Hero Section */}
-        <View style={styles.hero}>
-          <Text style={styles.heroEmoji}>🍔</Text>
-          <Text style={styles.heroTitle}>Street Burger</Text>
-          <Text style={styles.heroSubtitle}>
-            Sri Lankan Seafood Meets Gourmet Burgers
-          </Text>
+        {/* Featured Card */}
+        <View style={styles.featuredContainer}>
+          <TouchableOpacity style={styles.featuredCard} onPress={() => router.push('/(tabs)/menu')}>
+            <Text style={styles.featuredTitle}>Experience the Best Burgers in Town</Text>
+            <Text style={styles.featuredSubtitle}>Order now and get 20% off</Text>
+            <Text style={styles.featuredDecoration}>🍔</Text>
+          </TouchableOpacity>
         </View>
 
-        {/* Login Banner (if not logged in) */}
-        {!isAuthenticated && <LoginBanner />}
-
-        {/* Welcome Back (if logged in) */}
-        {isAuthenticated && user && (
-          <View style={styles.welcomeContainer}>
-            <View style={styles.welcomeHeader}>
-              <View style={styles.welcomeBack}>
-                <Text style={styles.welcomeText}>Welcome back, {user.name}! 👋</Text>
-              </View>
-              <TouchableOpacity
-                style={styles.logoutButton}
-                onPress={() => signOut()}
-              >
-                <Text style={styles.logoutButtonText}>Logout</Text>
-              </TouchableOpacity>
-            </View>
-
-            {/* Admin Dashboard - only for ADMIN role */}
-            {user?.role === 'ADMIN' && (
-              <TouchableOpacity
-                style={styles.adminButton}
-                onPress={() => router.push('/admin' as any)}
-              >
-                <View style={styles.adminIconContainer}>
-                  <Ionicons name="settings" size={20} color="#FFF" />
-                </View>
-                <Text style={styles.adminButtonText}>Admin Dashboard</Text>
-                <Ionicons name="chevron-forward" size={16} color={Colors.light.tint} />
-              </TouchableOpacity>
-            )}
-          </View>
-        )}
-
-        {/* Quick Actions (Hidden for Admin) */}
+        {/* Action Grid */}
         {user?.role !== 'ADMIN' && (
-          <View style={styles.quickActions}>
-            <Link href="/(tabs)/menu" asChild>
-              <TouchableOpacity style={styles.quickAction}>
-                <Text style={styles.quickActionIcon}>🍽️</Text>
-                <Text style={styles.quickActionText}>View Menu</Text>
-              </TouchableOpacity>
-            </Link>
-            <Link href="/(tabs)/reservation" asChild>
-              <TouchableOpacity style={styles.quickAction}>
-                <Text style={styles.quickActionIcon}>📅</Text>
-                <Text style={styles.quickActionText}>Book Table</Text>
-              </TouchableOpacity>
-            </Link>
-            <Link href="/(tabs)/order" asChild>
-              <TouchableOpacity style={styles.quickAction}>
-                <Text style={styles.quickActionIcon}>🛒</Text>
-                <Text style={styles.quickActionText}>Order Now</Text>
-              </TouchableOpacity>
-            </Link>
+          <View style={styles.actionGrid}>
+            <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(tabs)/menu')}>
+              <View style={[styles.actionIconContainer, { backgroundColor: '#E6FFFA' }]}>
+                <Text style={{ fontSize: 24 }}>🍔</Text>
+              </View>
+              <Text style={styles.actionTitle}>Menu</Text>
+              <Text style={styles.actionSubtitle}>Hungry?</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(tabs)/reservation')}>
+              <View style={[styles.actionIconContainer, { backgroundColor: '#EBF8FF' }]}>
+                <Text style={{ fontSize: 24 }}>📅</Text>
+              </View>
+              <Text style={styles.actionTitle}>Book</Text>
+              <Text style={styles.actionSubtitle}>Reserve Table</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={styles.actionCard} onPress={() => router.push('/(tabs)/order')}>
+              <View style={[styles.actionIconContainer, { backgroundColor: '#FAF5FF' }]}>
+                <Text style={{ fontSize: 24 }}>🛒</Text>
+              </View>
+              <Text style={styles.actionTitle}>Orders</Text>
+              <Text style={styles.actionSubtitle}>My History</Text>
+            </TouchableOpacity>
           </View>
         )}
 
-        {/* Latest Reviews Section */}
+        {/* Admin Dashboard Button if Admin */}
+        {user?.role === 'ADMIN' && (
+          <TouchableOpacity
+            style={styles.adminButton}
+            onPress={() => router.push('/admin' as any)}
+          >
+            <View style={styles.adminIcon}>
+              <Ionicons name="settings" size={24} color="#FFF" />
+            </View>
+            <Text style={styles.adminButtonText}>Admin Dashboard</Text>
+            <Ionicons name="chevron-forward" size={20} color="#FFF" />
+          </TouchableOpacity>
+        )}
+
+        {/* Reviews Section */}
         <View style={styles.section}>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>What Our Customers Say</Text>
+            <Text style={styles.sectionTitle}>Happy Customers</Text>
             <TouchableOpacity>
-              <Text style={styles.seeAll}>See All →</Text>
+              <Text style={styles.seeAll}>See All</Text>
             </TouchableOpacity>
           </View>
           <ScrollView
@@ -212,37 +165,76 @@ export default function HomeScreen() {
           >
             {reviews.length > 0 ? (
               reviews.map((review) => (
-                <ReviewCard key={review.id} review={review} />
+                <View key={review.id} style={styles.reviewCard}>
+                  <View style={styles.reviewHeader}>
+                    <View style={styles.reviewerInfo}>
+                      <View style={styles.reviewerAvatar}>
+                        <Text style={styles.reviewerInitial}>
+                          {review.reviewerName ? review.reviewerName.charAt(0) : 'A'}
+                        </Text>
+                      </View>
+                      <Text style={styles.reviewerName}>{review.reviewerName || 'Anonymous'}</Text>
+                    </View>
+                    <View style={styles.ratingContainer}>
+                      {[...Array(5)].map((_, i) => (
+                        <Text key={i} style={styles.star}>
+                          {i < review.rating ? '⭐' : '☆'}
+                        </Text>
+                      ))}
+                    </View>
+                  </View>
+                  <Text style={styles.reviewComment} numberOfLines={3}>
+                    {review.comment}
+                  </Text>
+                </View>
               ))
             ) : (
-              <View style={styles.noReviews}>
-                <Text style={styles.noReviewsText}>Reviews coming soon!</Text>
-              </View>
+              // Placeholder reviews if none exist
+              [1, 2].map((i) => (
+                <View key={i} style={styles.reviewCard}>
+                  <View style={styles.reviewHeader}>
+                    <View style={styles.reviewerInfo}>
+                      <View style={styles.reviewerAvatar}>
+                        <Text style={styles.reviewerInitial}>J</Text>
+                      </View>
+                      <Text style={styles.reviewerName}>John Doe</Text>
+                    </View>
+                    <View style={styles.ratingContainer}>
+                      <Text style={styles.star}>⭐⭐⭐⭐⭐</Text>
+                    </View>
+                  </View>
+                  <Text style={styles.reviewComment}>
+                    "Absolutely loved the spicy burger! The ambiance is great and the staff is super friendly. Will visit again."
+                  </Text>
+                </View>
+              ))
             )}
           </ScrollView>
         </View>
 
-        {/* About Section */}
-        <View style={styles.aboutSection}>
-          <Text style={styles.aboutTitle}>About Us</Text>
-          <Text style={styles.aboutText}>
-            {restaurantInfo?.aboutUs ||
-              'Welcome to Street Burger - Where Sri Lankan Flavors Meet Gourmet Burgers! Experience the perfect fusion of fresh seafood and traditional spices.'}
-          </Text>
+        {/* Info / About Snippet */}
+        <View style={styles.section}>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>Visit Us</Text>
+          </View>
+          <View style={styles.infoContainer}>
+            <View style={styles.infoCard}>
+              <View style={styles.infoIcon}>
+                <Ionicons name="time-outline" size={24} color="#48BB78" />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.infoTitle}>Open Daily</Text>
+                <Text style={styles.infoText}>11:00 AM - 11:00 PM</Text>
+              </View>
+            </View>
+          </View>
         </View>
 
-        {/* Opening Hours */}
-        <View style={styles.hoursSection}>
-          <Text style={styles.hoursIcon}>🕐</Text>
-          <Text style={styles.hoursTitle}>Opening Hours</Text>
-          <Text style={styles.hoursText}>
-            {restaurantInfo?.openingHours || 'Monday - Sunday: 11:00 AM - 11:00 PM'}
-          </Text>
-        </View>
       </ScrollView>
 
-      {/* Floating Call Button (Hidden for Admin) */}
-      {user?.role !== 'ADMIN' && <CallUsButton phone={restaurantInfo?.phone} />}
+      {/* Floating Call Button */}
+      {/* Draggable Floating Call Button */}
+      <DraggableCallButton phoneNumber={restaurantInfo?.phone} />
     </View>
   );
 }
@@ -250,273 +242,330 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: Colors.light.background,
+    backgroundColor: '#F8F9FA', // Modern light gray background
   },
   scrollView: {
     flex: 1,
   },
   scrollContent: {
-    paddingBottom: 100,
+    paddingBottom: 120,
   },
-  hero: {
-    backgroundColor: Colors.primary,
-    paddingVertical: 32,
-    paddingHorizontal: Spacing.screenPadding,
+  // Modern Header
+  headerContainer: {
+    paddingTop: Platform.OS === 'android' ? 60 : 60,
+    paddingHorizontal: 24,
+    paddingBottom: 24,
+    backgroundColor: '#FFF',
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.05,
+    shadowRadius: 15,
+    elevation: 5,
+    zIndex: 10,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  heroEmoji: {
-    fontSize: 48,
-    marginBottom: 8,
+  greetingText: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#718096',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
   },
-  heroTitle: {
-    ...Typography.styles.h1,
-    color: '#FFFFFF',
+  usersName: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#1A202C',
+    marginTop: 4,
+  },
+  profileButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: '#F7FAFC',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  avatarText: {
+    fontSize: 20,
+  },
+  // Hero / Featured
+  featuredContainer: {
+    marginTop: 24,
+    marginBottom: 16,
+    paddingHorizontal: 24,
+  },
+  featuredCard: {
+    backgroundColor: '#000',
+    borderRadius: 24,
+    padding: 24,
+    overflow: 'hidden',
+    position: 'relative',
+    height: 160,
+    justifyContent: 'center',
+  },
+  featuredTitle: {
+    color: '#FFF',
+    fontSize: 24,
+    fontWeight: 'bold',
+    width: '70%',
+    lineHeight: 32,
+  },
+  featuredSubtitle: {
+    color: 'rgba(255,255,255,0.7)',
+    fontSize: 14,
+    marginTop: 8,
+    fontWeight: '500',
+  },
+  featuredDecoration: {
+    position: 'absolute',
+    right: -20,
+    bottom: -20,
+    fontSize: 120,
+    opacity: 0.1,
+  },
+  // Action Grid
+  actionGrid: {
+    flexDirection: 'row',
+    paddingHorizontal: 24,
+    gap: 16,
+    marginBottom: 32,
+  },
+  actionCard: {
+    flex: 1,
+    backgroundColor: '#FFF',
+    padding: 16,
+    borderRadius: 20,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
+  },
+  actionIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+  },
+  actionTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#2D3748',
     marginBottom: 4,
   },
-  heroSubtitle: {
-    ...Typography.styles.body,
-    color: '#FFFFFF',
-    opacity: 0.9,
+  actionSubtitle: {
+    fontSize: 10,
+    color: '#718096',
+    fontWeight: '500',
   },
-  loginBanner: {
-    backgroundColor: Colors.light.surface,
-    margin: Spacing.screenPadding,
-    padding: Spacing.cardPadding,
-    borderRadius: Spacing.borderRadius.xl,
-    ...Spacing.shadow.md,
+  // Section Styles
+  section: {
+    marginBottom: 0,
   },
-  loginBannerContent: {
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 24,
     marginBottom: 16,
   },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1A202C',
+  },
+  seeAll: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: Colors.primary,
+  },
+  reviewsContainer: {
+    paddingHorizontal: 24,
+    gap: 16,
+    paddingBottom: 10, // For shadow
+  },
+  reviewCard: {
+    width: width * 0.75,
+    backgroundColor: '#FFF',
+    borderRadius: 20,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
+    shadowRadius: 10,
+    elevation: 3,
+    borderWidth: 1,
+    borderColor: '#F7FAFC',
+  },
+  reviewHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  reviewerInfo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  reviewerAvatar: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: '#EDF2F7',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  reviewerInitial: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#4A5568',
+  },
+  reviewerName: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#2D3748',
+  },
+  ratingContainer: {
+    flexDirection: 'row',
+    gap: 2,
+  },
+  star: {
+    fontSize: 12,
+    color: '#ECC94B',
+  },
+  reviewComment: {
+    fontSize: 14,
+    color: '#4A5568',
+    lineHeight: 22,
+  },
+  // Login Banner
+  loginBanner: {
+    margin: 24,
+    padding: 24,
+    backgroundColor: '#1A202C',
+    borderRadius: 24,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  loginBannerContent: {
+    zIndex: 1,
+  },
   loginBannerTitle: {
-    ...Typography.styles.h4,
-    color: Colors.light.text,
-    marginBottom: 4,
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#FFF',
+    marginBottom: 8,
   },
   loginBannerSubtitle: {
-    ...Typography.styles.bodySmall,
-    color: Colors.light.textSecondary,
+    fontSize: 14,
+    color: '#A0AEC0',
+    marginBottom: 20,
   },
   loginBannerButtons: {
     flexDirection: 'row',
     gap: 12,
   },
   loginButton: {
-    flex: 1,
-    backgroundColor: Colors.primary,
+    backgroundColor: '#FFF',
     paddingVertical: 12,
-    borderRadius: Spacing.borderRadius.lg,
-    alignItems: 'center',
+    paddingHorizontal: 24,
+    borderRadius: 12,
   },
   loginButtonText: {
-    ...Typography.styles.button,
-    color: '#FFFFFF',
+    color: '#1A202C',
+    fontWeight: 'bold',
   },
   signupButton: {
-    flex: 1,
-    backgroundColor: 'transparent',
-    borderWidth: 2,
-    borderColor: Colors.primary,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.3)',
     paddingVertical: 12,
-    borderRadius: Spacing.borderRadius.lg,
-    alignItems: 'center',
+    paddingHorizontal: 24,
+    borderRadius: 12,
   },
   signupButtonText: {
-    ...Typography.styles.button,
-    color: Colors.primary,
-  },
-  welcomeContainer: {
-    paddingHorizontal: Spacing.screenPadding,
-    marginBottom: 8,
-  },
-  welcomeHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 8,
-  },
-  welcomeBack: {
-    flex: 1,
-  },
-  welcomeText: {
-    ...Typography.styles.h4,
-    color: Colors.light.text,
-  },
-  logoutButton: {
-    backgroundColor: 'rgba(231, 76, 60, 0.1)',
-    paddingHorizontal: 12,
-    paddingVertical: 6,
-    borderRadius: Spacing.borderRadius.md,
-    borderWidth: 1,
-    borderColor: 'rgba(231, 76, 60, 0.3)',
-  },
-  logoutButtonText: {
-    ...Typography.styles.caption,
-    color: '#e74c3c',
+    color: '#FFF',
     fontWeight: '600',
   },
-  quickActions: {
-    flexDirection: 'row',
-    paddingHorizontal: Spacing.screenPadding,
-    paddingVertical: 16,
-    gap: 12,
-  },
-  quickAction: {
-    flex: 1,
-    backgroundColor: Colors.light.surface,
-    padding: 16,
-    borderRadius: Spacing.borderRadius.lg,
-    alignItems: 'center',
-    ...Spacing.shadow.sm,
-  },
-  quickActionIcon: {
-    fontSize: 28,
-    marginBottom: 8,
-  },
-  quickActionText: {
-    ...Typography.styles.caption,
-    color: Colors.light.text,
-    fontWeight: '600',
-  },
-  section: {
-    marginTop: 16,
-    paddingVertical: 8,
-  },
-  sectionHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: Spacing.screenPadding,
-    marginBottom: 12,
-  },
-  sectionTitle: {
-    ...Typography.styles.h5,
-    color: Colors.light.text,
-  },
-  seeAll: {
-    ...Typography.styles.bodySmall,
-    color: Colors.primary,
-    fontWeight: '600',
-  },
-  reviewsContainer: {
-    paddingHorizontal: Spacing.screenPadding,
-    gap: 12,
-  },
-  reviewCard: {
-    width: width * 0.7,
-    backgroundColor: Colors.light.surface,
-    padding: Spacing.cardPadding,
-    borderRadius: Spacing.borderRadius.lg,
-    marginRight: 12,
-    ...Spacing.shadow.sm,
-  },
-  reviewHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  reviewerName: {
-    ...Typography.styles.label,
-    color: Colors.light.text,
-  },
-  ratingContainer: {
-    flexDirection: 'row',
-  },
-  star: {
-    fontSize: 12,
-  },
-  reviewComment: {
-    ...Typography.styles.bodySmall,
-    color: Colors.light.textSecondary,
-    lineHeight: 20,
-  },
-  noReviews: {
-    width: width - Spacing.screenPadding * 2,
-    padding: 32,
-    alignItems: 'center',
-  },
-  noReviewsText: {
-    ...Typography.styles.body,
-    color: Colors.light.textSecondary,
-  },
-  aboutSection: {
-    padding: Spacing.screenPadding,
-    marginTop: 16,
-  },
-  aboutTitle: {
-    ...Typography.styles.h5,
-    color: Colors.light.text,
-    marginBottom: 8,
-  },
-  aboutText: {
-    ...Typography.styles.body,
-    color: Colors.light.textSecondary,
-    lineHeight: 24,
-  },
-  hoursSection: {
-    backgroundColor: Colors.light.surface,
-    margin: Spacing.screenPadding,
-    padding: Spacing.cardPadding,
-    borderRadius: Spacing.borderRadius.lg,
-    alignItems: 'center',
-    ...Spacing.shadow.sm,
-  },
-  hoursIcon: {
-    fontSize: 32,
-    marginBottom: 8,
-  },
-  hoursTitle: {
-    ...Typography.styles.h5,
-    color: Colors.light.text,
-    marginBottom: 4,
-  },
-  hoursText: {
-    ...Typography.styles.body,
-    color: Colors.light.textSecondary,
-  },
-  callButton: {
-    position: 'absolute',
-    bottom: 24,
-    right: 24,
-    backgroundColor: Colors.success,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: Spacing.borderRadius.full,
-    flexDirection: 'row',
-    alignItems: 'center',
-    ...Spacing.shadow.lg,
-  },
-  callButtonIcon: {
-    fontSize: 20,
-    marginRight: 8,
-  },
-  callButtonText: {
-    ...Typography.styles.button,
-    color: '#FFFFFF',
-  },
+  // Admin Button
   adminButton: {
+    marginHorizontal: 24,
+    backgroundColor: '#2D3748',
+    padding: 16,
+    borderRadius: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.light.surface,
-    padding: 12,
-    borderRadius: 12,
-    marginTop: 12,
-    borderWidth: 1,
-    borderColor: Colors.light.tint + '20',
+    marginBottom: 24,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  adminIconContainer: {
-    backgroundColor: Colors.light.tint,
-    width: 32,
-    height: 32,
-    borderRadius: 8,
-    justifyContent: 'center',
+  adminIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255,255,255,0.1)',
     alignItems: 'center',
-    marginRight: 12,
+    justifyContent: 'center',
+    marginRight: 16,
   },
   adminButtonText: {
-    ...Typography.styles.label,
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFF',
     flex: 1,
-    color: Colors.light.text,
+  },
+  // Info Cards
+  infoContainer: {
+    paddingHorizontal: 24,
+    gap: 16,
+  },
+  infoCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF',
+    padding: 16,
+    borderRadius: 16,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 5,
+    elevation: 1,
+  },
+  infoIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#F0FFF4',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 16,
+  },
+  infoContent: {
+    flex: 1,
+  },
+  infoTitle: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#718096',
+    marginBottom: 2,
+  },
+  infoText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#2D3748',
   },
 });

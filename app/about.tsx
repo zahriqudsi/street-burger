@@ -47,12 +47,15 @@ export default function AboutScreen() {
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Stack.Screen options={{
+                headerShown: true,
                 title: 'About Us',
-                headerTransparent: true,
-                headerTintColor: '#FFF',
-                headerLeft: () => <BackButton light={true} />
+                headerTitleStyle: { color: '#fff' },
+                headerStyle: { backgroundColor: '#000' },
+                headerTransparent: false,
+                headerTintColor: '#000',
+                headerLeft: () => <BackButton />
             }} />
 
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -114,7 +117,7 @@ export default function AboutScreen() {
                     </View>
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
