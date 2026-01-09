@@ -16,6 +16,12 @@ Notifications.setNotificationHandler({
 });
 
 export async function registerForPushNotificationsAsync() {
+    // Skip notification registration in Expo Go to avoid the noisy SDK 53 error
+    if (Constants.executionEnvironment === 'storeClient') {
+        console.log('[Push] Skipping registration: Not supported in Expo Go (Android SDK 53+)');
+        return null;
+    }
+
     let token;
 
     if (Platform.OS === 'android') {
@@ -47,7 +53,7 @@ export async function registerForPushNotificationsAsync() {
 
             if (!projectId) {
                 console.warn('[Push] No projectId found in app.config.js or app.json. Push notifications will not be active.');
-                console.warn('[Push] To fix this, run: npx eas project:init');
+                // console.warn('[Push] To fix this, run: npx eas project:init');
                 return;
             }
 
@@ -59,6 +65,11 @@ export async function registerForPushNotificationsAsync() {
             // Save token to backend
             await userService.updatePushToken(token);
         } catch (e: any) {
+            if (e.message?.includes('removed from Expo Go') || e.message?.includes('not fully supported')) {
+                console.warn('[Push] Push notifications are not supported in Expo Go on Android (SDK 53+). strict mode.');
+                console.warn('[Push] Use a development build (eas build -p android --profile development) to test notifications.');
+                return null;
+            }
             if (e.message?.includes('EXPERIENCE_NOT_FOUND')) {
                 console.warn('[Push] The projectId in your app.json is invalid or not linked to your Expo account.');
                 console.warn('[Push] Please run "npx eas project:init" to create a valid project.');

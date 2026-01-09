@@ -12,6 +12,7 @@ import {
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/src/constants/colors';
+import { Typography } from '@/src/constants/typography';
 import { reviewService, Review } from '@/src/services/reviews';
 import { format } from 'date-fns';
 import { BackButton } from '@/components/BackButton';
@@ -113,73 +114,88 @@ export default function ModerateReviews() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7FAFC',
+        backgroundColor: Colors.bgLight,
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: Colors.bgLight,
     },
     listContent: {
         padding: 20,
+        paddingBottom: 40,
     },
     reviewCard: {
-        backgroundColor: '#FFF',
-        borderRadius: 16,
-        padding: 16,
+        backgroundColor: Colors.white,
+        borderRadius: 24,
+        padding: 20,
         marginBottom: 16,
+        shadowColor: Colors.cardShadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: Colors.bgLight,
     },
     header: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'flex-start',
-        marginBottom: 12,
+        marginBottom: 16,
     },
     reviewerName: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#2D3748',
+        fontSize: Typography.fontSize.md,
+        fontWeight: '800',
+        color: Colors.textMain,
     },
     date: {
         fontSize: 12,
-        color: '#A0AEC0',
+        color: Colors.textMuted,
+        fontWeight: '600',
     },
     rating: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF9C4',
-        paddingHorizontal: 8,
-        paddingVertical: 4,
-        borderRadius: 8,
+        backgroundColor: '#FFD70015',
+        paddingHorizontal: 10,
+        paddingVertical: 6,
+        borderRadius: 10,
     },
     ratingText: {
         fontSize: 12,
-        fontWeight: 'bold',
-        color: '#FBC02D',
+        fontWeight: '800',
+        color: '#B8860B',
         marginRight: 4,
     },
     comment: {
-        fontSize: 14,
-        color: '#4A5568',
-        lineHeight: 20,
-        marginBottom: 16,
+        fontSize: Typography.fontSize.base,
+        color: Colors.textMain,
+        lineHeight: 22,
+        marginBottom: 20,
+        fontWeight: '500',
     },
     actions: {
         borderTopWidth: 1,
-        borderTopColor: '#F7FAFC',
-        paddingTop: 12,
+        borderTopColor: Colors.bgLight,
+        paddingTop: 16,
         flexDirection: 'row',
         justifyContent: 'flex-end',
     },
     deleteBtn: {
         flexDirection: 'row',
         alignItems: 'center',
+        backgroundColor: Colors.error + '10',
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 10,
     },
     deleteBtnText: {
-        color: '#FF4757',
-        fontWeight: 'bold',
+        color: Colors.error,
+        fontWeight: '800',
         fontSize: 14,
-        marginLeft: 6,
+        marginLeft: 8,
     },
     emptyContainer: {
         alignItems: 'center',
@@ -187,7 +203,8 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         marginTop: 16,
-        fontSize: 16,
-        color: '#718096',
+        fontSize: Typography.fontSize.md,
+        color: Colors.textMuted,
+        fontWeight: '600',
     },
 });

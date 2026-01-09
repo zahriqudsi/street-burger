@@ -13,6 +13,7 @@ import {
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '@/src/constants/colors';
+import { Typography } from '@/src/constants/typography';
 import { restaurantService, RestaurantInfo } from '@/src/services/restaurant';
 import { BackButton } from '@/components/BackButton';
 
@@ -151,60 +152,78 @@ export default function RestaurantSettings() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7FAFC',
+        backgroundColor: Colors.bgLight,
     },
     loadingContainer: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
+        backgroundColor: Colors.bgLight,
     },
     scrollContent: {
         padding: 20,
     },
     section: {
-        backgroundColor: '#FFF',
-        borderRadius: 20,
-        padding: 20,
+        backgroundColor: Colors.white,
+        borderRadius: 24,
+        padding: 24,
         marginBottom: 20,
+        shadowColor: Colors.cardShadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: Colors.bgLight,
     },
     sectionLabel: {
-        fontSize: 16,
-        fontWeight: 'bold',
+        fontSize: Typography.fontSize.md,
+        fontWeight: '800',
         color: Colors.primary,
-        marginBottom: 20,
+        marginBottom: 24,
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
     inputGroup: {
-        marginBottom: 16,
+        marginBottom: 20,
     },
     label: {
-        fontSize: 14,
-        color: '#718096',
-        marginBottom: 8,
+        fontSize: Typography.fontSize.sm,
+        fontWeight: '700',
+        color: Colors.textMain,
+        marginBottom: 10,
+        marginLeft: 4,
     },
     input: {
-        backgroundColor: '#F7FAFC',
-        borderRadius: 12,
-        padding: 12,
-        fontSize: 16,
-        color: '#2D3748',
+        backgroundColor: Colors.bgLight,
+        borderRadius: 16,
+        padding: 16,
+        fontSize: Typography.fontSize.base,
+        color: Colors.textMain,
         borderWidth: 1,
-        borderColor: '#E2E8F0',
+        borderColor: Colors.border,
     },
     textArea: {
-        height: 100,
+        height: 120,
         textAlignVertical: 'top',
+        paddingTop: 16,
     },
     saveBtn: {
-        backgroundColor: Colors.primary,
-        height: 56,
-        borderRadius: 16,
+        backgroundColor: Colors.textMain,
+        height: 60,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 40,
+        shadowColor: Colors.cardShadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+        elevation: 6,
     },
     saveBtnText: {
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
+        color: Colors.white,
+        fontSize: Typography.fontSize.lg,
+        fontWeight: '800',
     },
 });

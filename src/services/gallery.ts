@@ -20,7 +20,7 @@ export const galleryService = {
 
     // ADMIN: Delete gallery image
     delete: async (id: number): Promise<void> => {
-        await api.delete(`/gallery/${id}`);
+        await api.post(`/gallery/${id}`);
     },
 };
 

@@ -6,101 +6,142 @@ import { Colors } from '../../src/constants/colors';
 import { Stack } from 'expo-router';
 import { BackButton } from '@/components/BackButton';
 
+import { Typography } from '../../src/constants/typography';
+
 const ADMIN_MODULES = [
-    { id: 'menu', title: 'Menu & Categories', icon: 'fast-food' as const, color: '#FF5722' },
-    { id: 'reservations', title: 'Reservations', icon: 'calendar' as const, color: '#4CAF50' },
-    { id: 'orders', title: 'Orders', icon: 'cart' as const, color: '#2196F3' },
-    { id: 'notifications', title: 'Notifications', icon: 'notifications' as const, color: '#9C27B0' },
-    { id: 'rewards', title: 'Reward Points', icon: 'gift' as const, color: '#FFC107' },
-    { id: 'users', title: 'User Management', icon: 'people' as const, color: '#009688' },
-    { id: 'restaurant_settings', title: 'Restaurant Settings', icon: 'settings' as const, color: '#607D8B' },
-    { id: 'moderate_reviews', title: 'Moderate Reviews', icon: 'star' as const, color: '#FFD700' },
+    { id: 'menu', title: 'Menu & Categories', icon: 'fast-food' as const, color: '#FF6B35' },
+    { id: 'orders', title: 'Orders', icon: 'cart' as const, color: '#3182CE' },
+    { id: 'reservations', title: 'Reservations', icon: 'calendar' as const, color: '#38A169' },
+    { id: 'notifications', title: 'Notifications', icon: 'notifications' as const, color: '#805AD5' },
+    { id: 'rewards', title: 'Reward Points', icon: 'gift' as const, color: '#D69E2E' },
+    { id: 'users', title: 'Users', icon: 'people' as const, color: '#319795' },
+    { id: 'moderate_reviews', title: 'Reviews', icon: 'star' as const, color: '#ECC94B' },
+    { id: 'restaurant_settings', title: 'Settings', icon: 'settings' as const, color: '#718096' },
 ];
 
 export default function AdminDashboard() {
     const router = useRouter();
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <Stack.Screen options={{
                 title: 'Admin Dashboard',
                 headerLeft: () => <BackButton />
             }} />
-            <ScrollView style={styles.container}>
+            <ScrollView
+                style={styles.scrollView}
+                contentContainerStyle={styles.scrollContent}
+                showsVerticalScrollIndicator={false}
+            >
                 <View style={styles.header}>
-                    <Text style={styles.welcomeText}>Welcome, Admin</Text>
-                    <Text style={styles.subText}>Manage your restaurant from here</Text>
+                    <Text style={styles.welcomeText}>Welcome, Admin 👋</Text>
+                    <Text style={styles.subText}>Manage your restaurant's digital presence</Text>
                 </View>
 
                 <View style={styles.grid}>
                     {ADMIN_MODULES.map((module) => (
                         <TouchableOpacity
                             key={module.id}
-                            style={[styles.card, { borderLeftColor: module.color }]}
+                            style={styles.card}
                             onPress={() => router.push(`/admin/${module.id}` as any)}
                         >
-                            <View style={[styles.iconContainer, { backgroundColor: module.color + '20' }]}>
-                                <Ionicons name={module.icon} size={32} color={module.color} />
+                            <View style={[styles.iconContainer, { backgroundColor: module.color + '15' }]}>
+                                <Ionicons name={module.icon} size={28} color={module.color} />
                             </View>
                             <Text style={styles.moduleTitle}>{module.title}</Text>
-                            <Ionicons name="chevron-forward" size={24} color="#CCC" />
+                            <View style={styles.cardFooter}>
+                                <Text style={styles.manageText}>Manage</Text>
+                                <Ionicons name="arrow-forward" size={16} color={Colors.textMuted} />
+                            </View>
                         </TouchableOpacity>
                     ))}
                 </View>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
+        backgroundColor: Colors.bgLight,
+    },
+    scrollView: {
+        flex: 1,
+    },
+    scrollContent: {
+        paddingBottom: 40,
     },
     header: {
         padding: 24,
-        backgroundColor: '#FFF',
-        marginBottom: 16,
+        paddingTop: 16,
+        backgroundColor: Colors.white,
+        borderBottomLeftRadius: 32,
+        borderBottomRightRadius: 32,
+        shadowColor: Colors.cardShadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 15,
+        elevation: 5,
+        marginBottom: 24,
     },
     welcomeText: {
-        fontSize: 28,
+        fontSize: Typography.fontSize['3xl'],
         fontWeight: '800',
-        color: '#333',
+        color: Colors.textMain,
     },
     subText: {
-        fontSize: 16,
-        color: '#666',
-        marginTop: 4,
+        fontSize: Typography.fontSize.md,
+        color: Colors.textMuted,
+        marginTop: 6,
+        fontWeight: '500',
     },
     grid: {
-        padding: 16,
+        paddingHorizontal: 20,
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
         gap: 16,
     },
     card: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        backgroundColor: '#FFF',
-        padding: 16,
-        borderRadius: 16,
-        borderLeftWidth: 6,
-        shadowColor: '#000',
+        width: '47%',
+        backgroundColor: Colors.white,
+        padding: 20,
+        borderRadius: 24,
+        shadowColor: Colors.cardShadow,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 10,
         elevation: 3,
+        borderWidth: 1,
+        borderColor: Colors.bgLight,
     },
     iconContainer: {
-        width: 60,
-        height: 60,
-        borderRadius: 12,
+        width: 52,
+        height: 52,
+        borderRadius: 16,
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 16,
+        marginBottom: 16,
     },
     moduleTitle: {
-        flex: 1,
-        fontSize: 18,
-        fontWeight: '600',
-        color: '#333',
+        fontSize: Typography.fontSize.base,
+        fontWeight: '700',
+        color: Colors.textMain,
+        marginBottom: 12,
+    },
+    cardFooter: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingTop: 8,
+        borderTopWidth: 1,
+        borderTopColor: Colors.bgLight,
+    },
+    manageText: {
+        fontSize: Typography.fontSize.xs,
+        fontWeight: '700',
+        color: Colors.textMuted,
+        textTransform: 'uppercase',
     },
 });

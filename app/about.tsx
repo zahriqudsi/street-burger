@@ -11,13 +11,16 @@ import {
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/src/constants/colors';
+import { useAppColors } from '@/src/hooks/useAppColors';
+import { Typography } from '@/src/constants/typography';
 import { restaurantService, RestaurantInfo } from '@/src/services/restaurant';
 import { BackButton } from '@/components/BackButton';
+import { Colors as GlobalColors } from '@/src/constants/colors';
 
 const { width } = Dimensions.get('window');
 
 export default function AboutScreen() {
+    const colors = useAppColors();
     const [info, setInfo] = useState<RestaurantInfo | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -40,22 +43,22 @@ export default function AboutScreen() {
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={Colors.primary} />
+            <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+                <ActivityIndicator size="large" color={colors.primary} />
             </View>
         );
     }
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <Stack.Screen options={{
                 headerShown: true,
                 title: 'About Us',
-                headerTitleStyle: { color: '#fff' },
-                headerStyle: { backgroundColor: '#000' },
+                headerTitleStyle: { color: colors.textMain, fontWeight: '800' },
+                headerStyle: { backgroundColor: colors.surface },
                 headerTransparent: false,
-                headerTintColor: '#000',
-                headerLeft: () => <BackButton />
+                headerTintColor: colors.textMain,
+                headerLeft: () => <BackButton color={colors.textMain} />
             }} />
 
             <ScrollView showsVerticalScrollIndicator={false}>
@@ -66,8 +69,8 @@ export default function AboutScreen() {
                         style={styles.heroImage}
                     />
                     <View style={styles.heroOverlay}>
-                        <Text style={styles.heroTitle}>{info?.name || 'Street Burger'}</Text>
-                        <Text style={styles.heroSubtitle}>Crafting Gourmet Joy Since 2020</Text>
+                        <Text style={[styles.heroTitle, { color: colors.white }]}>{info?.name || 'Street Burger'}</Text>
+                        <Text style={[styles.heroSubtitle, { color: colors.white }]}>Crafting Gourmet Joy Since 2020</Text>
                     </View>
                 </View>
 
@@ -75,35 +78,35 @@ export default function AboutScreen() {
                 <View style={styles.content}>
                     <View style={styles.section}>
                         <View style={styles.sectionHeader}>
-                            <Ionicons name="restaurant" size={24} color={Colors.primary} />
-                            <Text style={styles.sectionTitle}>Our Story</Text>
+                            <Ionicons name="restaurant" size={24} color={colors.primary} />
+                            <Text style={[styles.sectionTitle, { color: colors.textMain }]}>Our Story</Text>
                         </View>
-                        <Text style={styles.aboutText}>
+                        <Text style={[styles.aboutText, { color: colors.textMain }]}>
                             {info?.aboutUs || "Street Burger was born from a passion for authentic, gourmet street food. We believe that a great burger is more than just a meal – it's an experience."}
                         </Text>
                     </View>
 
-                    <View style={styles.statsContainer}>
+                    <View style={[styles.statsContainer, { backgroundColor: colors.surface, shadowColor: colors.cardShadow, borderColor: colors.bgLight }]}>
                         <View style={styles.statItem}>
-                            <Text style={styles.statValue}>50+</Text>
-                            <Text style={styles.statLabel}>Dishes</Text>
+                            <Text style={[styles.statValue, { color: colors.primary }]}>50+</Text>
+                            <Text style={[styles.statLabel, { color: colors.textMuted }]}>Dishes</Text>
                         </View>
                         <View style={styles.statItem}>
-                            <Text style={styles.statValue}>15k</Text>
-                            <Text style={styles.statLabel}>Fans</Text>
+                            <Text style={[styles.statValue, { color: colors.primary }]}>15k</Text>
+                            <Text style={[styles.statLabel, { color: colors.textMuted }]}>Fans</Text>
                         </View>
                         <View style={styles.statItem}>
-                            <Text style={styles.statValue}>4.9/5</Text>
-                            <Text style={styles.statLabel}>Rating</Text>
+                            <Text style={[styles.statValue, { color: colors.primary }]}>4.9/5</Text>
+                            <Text style={[styles.statLabel, { color: colors.textMuted }]}>Rating</Text>
                         </View>
                     </View>
 
                     <View style={styles.section}>
                         <View style={styles.sectionHeader}>
-                            <Ionicons name="shield-checkmark" size={24} color={Colors.primary} />
-                            <Text style={styles.sectionTitle}>Quality Guaranteed</Text>
+                            <Ionicons name="shield-checkmark" size={24} color={colors.primary} />
+                            <Text style={[styles.sectionTitle, { color: colors.textMain }]}>Quality Guaranteed</Text>
                         </View>
-                        <Text style={styles.aboutText}>
+                        <Text style={[styles.aboutText, { color: colors.textMain }]}>
                             We use only the freshest, locally sourced ingredients to create unique flavor profiles that honor traditional burger culture while pushing culinary boundaries.
                         </Text>
                     </View>
@@ -113,7 +116,7 @@ export default function AboutScreen() {
                             source={{ uri: 'https://images.unsplash.com/photo-1594212699903-ec8a3eca50f5?q=80&w=2071' }}
                             style={styles.footerImage}
                         />
-                        <Text style={styles.footerText}>Made with ❤️ in Sri Lanka</Text>
+                        <Text style={[styles.footerText, { color: colors.textMuted }]}>Made with ❤️ in Sri Lanka</Text>
                     </View>
                 </View>
             </ScrollView>
@@ -124,7 +127,6 @@ export default function AboutScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#FFF',
     },
     loadingContainer: {
         flex: 1,
@@ -132,7 +134,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     heroContainer: {
-        height: 350,
+        height: 400,
         width: '100%',
     },
     heroImage: {
@@ -141,80 +143,82 @@ const styles = StyleSheet.create({
     },
     heroOverlay: {
         ...StyleSheet.absoluteFillObject,
-        backgroundColor: 'rgba(0,0,0,0.4)',
+        backgroundColor: 'rgba(0,0,0,0.3)',
         justifyContent: 'flex-end',
-        padding: 24,
+        padding: 30,
     },
     heroTitle: {
-        fontSize: 32,
-        fontWeight: 'bold',
-        color: '#FFF',
+        fontSize: 42,
+        fontWeight: '900',
         marginBottom: 8,
     },
     heroSubtitle: {
         fontSize: 16,
-        color: '#E2E8F0',
-        fontWeight: '500',
+        fontWeight: '600',
+        opacity: 0.9,
     },
     content: {
         padding: 24,
     },
     section: {
-        marginBottom: 32,
+        marginBottom: 40,
     },
     sectionHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 20,
     },
     sectionTitle: {
-        fontSize: 22,
-        fontWeight: 'bold',
-        color: '#1A202C',
-        marginLeft: 12,
+        fontSize: Typography.fontSize.xl,
+        fontWeight: '800',
+        marginLeft: 14,
     },
     aboutText: {
         fontSize: 16,
-        lineHeight: 26,
-        color: '#4A5568',
+        lineHeight: 28,
+        fontWeight: '500',
     },
     statsContainer: {
         flexDirection: 'row',
         justifyContent: 'space-between',
-        backgroundColor: '#F7FAFC',
-        borderRadius: 20,
+        borderRadius: 24,
         padding: 24,
-        marginBottom: 32,
+        marginBottom: 40,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 2,
+        borderWidth: 1,
     },
     statItem: {
         alignItems: 'center',
     },
     statValue: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: Colors.primary,
+        fontSize: 26,
+        fontWeight: '900',
     },
     statLabel: {
-        fontSize: 12,
-        color: '#718096',
-        marginTop: 4,
+        fontSize: 10,
+        marginTop: 6,
+        fontWeight: '800',
         textTransform: 'uppercase',
-        letterSpacing: 1,
+        letterSpacing: 1.5,
     },
     footer: {
         alignItems: 'center',
-        marginTop: 16,
-        paddingBottom: 40,
+        marginTop: 20,
+        paddingBottom: 60,
     },
     footerImage: {
-        width: 120,
-        height: 120,
-        borderRadius: 60,
-        marginBottom: 20,
+        width: 140,
+        height: 140,
+        borderRadius: 30,
+        marginBottom: 24,
     },
     footerText: {
         fontSize: 14,
-        color: '#A0AEC0',
-        fontWeight: '500',
+        fontWeight: '700',
+        textTransform: 'uppercase',
+        letterSpacing: 1,
     },
 });

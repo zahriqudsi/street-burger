@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, Switch, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../src/constants/colors';
+import { Typography } from '../../src/constants/typography';
 import { notificationService } from '../../src/services/notifications';
 
 export default function ManageNotifications() {
@@ -111,18 +112,101 @@ export default function ManageNotifications() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F8F9FA' },
-    content: { padding: 16 },
-    card: { backgroundColor: '#FFF', borderRadius: 16, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
-    cardTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 24, color: '#333' },
-    inputGroup: { marginBottom: 20 },
-    label: { fontSize: 16, fontWeight: '600', color: '#444', marginBottom: 8 },
-    hint: { fontSize: 12, color: '#999', marginTop: -4, marginBottom: 8 },
-    input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 10, padding: 12, fontSize: 16, backgroundColor: '#FAFAFA' },
-    textArea: { height: 100, textAlignVertical: 'top' },
-    switchRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 20, paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#F0F0F0' },
-    sendButton: { backgroundColor: Colors.light.tint, padding: 16, borderRadius: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 10 },
-    disabledButton: { opacity: 0.6 },
-    sendButtonText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
-    disclaimer: { textAlign: 'center', marginTop: 24, color: '#999', fontSize: 12, paddingHorizontal: 40 },
+    container: {
+        flex: 1,
+        backgroundColor: Colors.bgLight,
+    },
+    content: {
+        padding: 20,
+    },
+    card: {
+        backgroundColor: Colors.white,
+        borderRadius: 24,
+        padding: 24,
+        shadowColor: Colors.cardShadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: Colors.bgLight,
+    },
+    cardTitle: {
+        fontSize: Typography.fontSize.xl,
+        fontWeight: '800',
+        marginBottom: 32,
+        color: Colors.textMain,
+    },
+    inputGroup: {
+        marginBottom: 24,
+    },
+    label: {
+        fontSize: Typography.fontSize.sm,
+        fontWeight: '700',
+        color: Colors.textMain,
+        marginBottom: 10,
+        marginLeft: 4,
+    },
+    hint: {
+        fontSize: 12,
+        color: Colors.textMuted,
+        marginTop: 2,
+        fontWeight: '600',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: Colors.border,
+        borderRadius: 16,
+        padding: 16,
+        fontSize: Typography.fontSize.base,
+        backgroundColor: Colors.bgLight,
+        color: Colors.textMain,
+    },
+    textArea: {
+        height: 120,
+        textAlignVertical: 'top',
+        paddingTop: 16,
+    },
+    switchRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        marginBottom: 32,
+        paddingVertical: 16,
+        borderTopWidth: 1,
+        borderBottomWidth: 1,
+        borderColor: Colors.bgLight,
+    },
+    sendButton: {
+        backgroundColor: Colors.textMain,
+        padding: 18,
+        borderRadius: 20,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 12,
+        marginTop: 12,
+        shadowColor: Colors.cardShadow,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 15,
+        elevation: 8,
+    },
+    disabledButton: {
+        opacity: 0.6,
+    },
+    sendButtonText: {
+        color: Colors.white,
+        fontSize: Typography.fontSize.lg,
+        fontWeight: '800',
+    },
+    disclaimer: {
+        textAlign: 'center',
+        marginTop: 32,
+        color: Colors.textMuted,
+        fontSize: 12,
+        paddingHorizontal: 40,
+        fontWeight: '600',
+        lineHeight: 18,
+    },
 });

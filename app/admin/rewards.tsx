@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../src/constants/colors';
+import { Typography } from '../../src/constants/typography';
 import { rewardService } from '../../src/services/rewards';
 
 export default function ManageRewards() {
@@ -130,22 +131,126 @@ export default function ManageRewards() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F8F9FA' },
-    content: { padding: 16 },
-    card: { backgroundColor: '#FFF', borderRadius: 16, padding: 20, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 10, elevation: 2 },
-    cardTitle: { fontSize: 20, fontWeight: 'bold', marginBottom: 20, color: '#333' },
-    searchSection: { flexDirection: 'row', gap: 12, marginBottom: 24 },
-    searchButton: { backgroundColor: '#333', width: 56, height: 56, borderRadius: 10, justifyContent: 'center', alignItems: 'center' },
-    userCard: { backgroundColor: '#F0F9FF', borderRadius: 12, padding: 16, marginBottom: 24, borderWidth: 1, borderColor: '#BAE6FD' },
-    pointsBadge: { alignItems: 'center' },
-    pointsLabel: { fontSize: 14, color: '#0369A1', marginBottom: 4 },
-    pointsValue: { fontSize: 32, fontWeight: 'bold', color: '#0369A1' },
-    form: { borderTopWidth: 1, borderTopColor: '#F0F0F0', paddingTop: 24 },
-    inputGroup: { marginBottom: 20 },
-    label: { fontSize: 16, fontWeight: '600', color: '#444', marginBottom: 4 },
-    hint: { fontSize: 12, color: '#999', marginBottom: 8 },
-    input: { borderWidth: 1, borderColor: '#DDD', borderRadius: 10, padding: 14, fontSize: 16, backgroundColor: '#FAFAFA' },
-    addButton: { backgroundColor: Colors.light.tint, padding: 16, borderRadius: 12, flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 10, marginTop: 10 },
-    disabledButton: { opacity: 0.6 },
-    addButtonText: { color: '#FFF', fontSize: 18, fontWeight: 'bold' },
+    container: {
+        flex: 1,
+        backgroundColor: Colors.bgLight,
+    },
+    content: {
+        padding: 20,
+    },
+    card: {
+        backgroundColor: Colors.white,
+        borderRadius: 24,
+        padding: 24,
+        shadowColor: Colors.cardShadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: Colors.bgLight,
+    },
+    cardTitle: {
+        fontSize: Typography.fontSize.xl,
+        fontWeight: '800',
+        marginBottom: 24,
+        color: Colors.textMain,
+    },
+    searchSection: {
+        flexDirection: 'row',
+        gap: 12,
+        marginBottom: 24,
+    },
+    searchButton: {
+        backgroundColor: Colors.textMain,
+        width: 56,
+        height: 56,
+        borderRadius: 16,
+        justifyContent: 'center',
+        alignItems: 'center',
+        shadowColor: Colors.cardShadow,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 4,
+    },
+    userCard: {
+        backgroundColor: Colors.primary + '10',
+        borderRadius: 20,
+        padding: 20,
+        marginBottom: 32,
+        borderWidth: 1,
+        borderColor: Colors.primary + '20',
+        alignItems: 'center',
+    },
+    pointsBadge: {
+        alignItems: 'center',
+    },
+    pointsLabel: {
+        fontSize: 14,
+        color: Colors.textMuted,
+        marginBottom: 4,
+        fontWeight: '700',
+        textTransform: 'uppercase',
+        letterSpacing: 0.5,
+    },
+    pointsValue: {
+        fontSize: 42,
+        fontWeight: '900',
+        color: Colors.primary,
+    },
+    form: {
+        borderTopWidth: 1,
+        borderTopColor: Colors.bgLight,
+        paddingTop: 32,
+    },
+    inputGroup: {
+        marginBottom: 24,
+    },
+    label: {
+        fontSize: Typography.fontSize.sm,
+        fontWeight: '700',
+        color: Colors.textMain,
+        marginBottom: 10,
+        marginLeft: 4,
+    },
+    hint: {
+        fontSize: 12,
+        color: Colors.textMuted,
+        marginBottom: 10,
+        marginLeft: 4,
+        fontWeight: '500',
+    },
+    input: {
+        borderWidth: 1,
+        borderColor: Colors.border,
+        borderRadius: 16,
+        padding: 16,
+        fontSize: Typography.fontSize.base,
+        backgroundColor: Colors.bgLight,
+        color: Colors.textMain,
+    },
+    addButton: {
+        backgroundColor: Colors.primary,
+        padding: 18,
+        borderRadius: 20,
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 12,
+        marginTop: 12,
+        shadowColor: Colors.primary,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 15,
+        elevation: 8,
+    },
+    disabledButton: {
+        opacity: 0.6,
+    },
+    addButtonText: {
+        color: Colors.white,
+        fontSize: Typography.fontSize.lg,
+        fontWeight: '800',
+    },
 });

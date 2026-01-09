@@ -28,7 +28,7 @@ export const restaurantService = {
     },
 
     update: async (id: number, data: Partial<RestaurantInfo>) => {
-        const response = await api.put(`/restaurant-info/update/${id}`, data);
+        const response = await api.post(`/restaurant-info/update/${id}`, data);
         return response.data;
     },
 

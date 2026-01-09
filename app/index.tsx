@@ -63,12 +63,12 @@ export default function SplashScreen() {
 
     const backgroundColor = bgAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: ['#000000', '#FFFFFF'],
+        outputRange: ['#000000', Colors.white],
     });
 
     const textColor = bgAnim.interpolate({
         inputRange: [0, 1],
-        outputRange: ['#FFFFFF', '#000000'],
+        outputRange: ['#FFFFFF', Colors.textMain],
     });
 
     const primaryColor = bgAnim.interpolate({

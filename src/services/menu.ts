@@ -37,12 +37,12 @@ export const menuService = {
     },
 
     updateCategory: async (id: number, category: Partial<MenuCategory>): Promise<MenuCategory> => {
-        const response = await api.put<ApiResponse<MenuCategory>>(`/menu/categories/${id}`, category);
+        const response = await api.post<ApiResponse<MenuCategory>>(`/menu/categories/${id}`, category);
         return response.data.data;
     },
 
     deleteCategory: async (id: number): Promise<void> => {
-        await api.delete(`/menu/categories/${id}`);
+        await api.post(`/menu/categories/delete/${id}`);
     },
 
     // ADMIN: Menu Items
@@ -52,12 +52,12 @@ export const menuService = {
     },
 
     updateItem: async (id: number, item: Partial<MenuItem>): Promise<MenuItem> => {
-        const response = await api.put<ApiResponse<MenuItem>>(`/menu/items/${id}`, item);
+        const response = await api.post<ApiResponse<MenuItem>>(`/menu/items/${id}`, item);
         return response.data.data;
     },
 
     deleteItem: async (id: number): Promise<void> => {
-        await api.delete(`/menu/items/${id}`);
+        await api.post(`/menu/items/delete/${id}`);
     },
 };
 

@@ -8,10 +8,13 @@ import * as SecureStore from 'expo-secure-store';
 // API Base URL - Change this to your backend URL
 // export const API_BASE_URL = 'http://localhost:8080';
 // export const API_BASE_URL = 'http://192.168.92.121:8080';
-export const API_BASE_URL = 'http://192.168.92.121:8080/api';
+// export const API_BASE_URL = 'http://192.168.165.121:8080/api';
+export const API_BASE_URL = 'http://api.sjtechnology.lk/api';
 
 // Token storage key
 export const TOKEN_KEY = 'street_burger_jwt_token';
+
+import { toastEmitter } from '../utils/toast-emitter';
 
 // Create axios instance
 const api: AxiosInstance = axios.create({
@@ -48,13 +51,41 @@ api.interceptors.request.use(
 
 // Response interceptor for error handling
 api.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        if (error.response?.status === 401) {
-            // Token expired or invalid - clear token
-            await SecureStore.deleteItemAsync(TOKEN_KEY);
-            // You can dispatch a logout action here if using global state
+    (response) => {
+        // Handle success messages if they exist in the response data
+        if (response.data?.success && response.data?.message && response.config.method !== 'get') {
+            toastEmitter.emit({
+                message: response.data.message,
+                type: 'success',
+            });
         }
+        return response;
+    },
+    async (error) => {
+        const status = error.response?.status;
+        const message = error.response?.data?.message || error.message || 'Something went wrong';
+
+        if (status === 401) {
+            await SecureStore.deleteItemAsync(TOKEN_KEY);
+            toastEmitter.emit({
+                message: 'Session expired. Please login again.',
+                type: 'error',
+            });
+        } else if (status === 403) {
+            toastEmitter.emit({
+                message: 'Access denied (403).',
+                type: 'error',
+            });
+        } else if (status === 404) {
+            // 404s might be handled locally, but we can show a toast if it's a critical API
+            console.log('[API] 404 Error:', error.config?.url);
+        } else {
+            toastEmitter.emit({
+                message: message,
+                type: 'error',
+            });
+        }
+
         return Promise.reject(error);
     }
 );

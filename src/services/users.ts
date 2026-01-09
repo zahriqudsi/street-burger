@@ -20,7 +20,7 @@ export const userService = {
 
     // Update user profile
     updateProfile: async (data: Partial<User>): Promise<User> => {
-        const response = await api.put<ApiResponse<User>>('/users/update', data);
+        const response = await api.post<ApiResponse<User>>('/users/update', data);
         return response.data.data;
     },
 

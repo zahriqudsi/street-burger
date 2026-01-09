@@ -24,7 +24,7 @@ export const orderService = {
     },
 
     updateStatus: async (id: number, status: OrderStatus): Promise<Order> => {
-        const response = await api.put<{ success: boolean; data: Order }>(`/orders/update-status/${id}`, null, {
+        const response = await api.post<{ success: boolean; data: Order }>(`/orders/update-status/${id}`, null, {
             params: { status }
         });
         return response.data.data;

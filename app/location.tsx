@@ -12,11 +12,14 @@ import {
 } from 'react-native';
 import { Stack } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '@/src/constants/colors';
+import { useAppColors } from '@/src/hooks/useAppColors';
 import { restaurantService, RestaurantInfo } from '@/src/services/restaurant';
 import { BackButton } from '@/components/BackButton';
+import { Typography } from '@/src/constants/typography';
+import { Colors as GlobalColors } from '@/src/constants/colors';
 
 export default function LocationScreen() {
+    const colors = useAppColors();
     const [info, setInfo] = useState<RestaurantInfo | null>(null);
     const [loading, setLoading] = useState(true);
 
@@ -52,57 +55,57 @@ export default function LocationScreen() {
 
     if (loading) {
         return (
-            <View style={styles.loadingContainer}>
-                <ActivityIndicator size="large" color={Colors.primary} />
+            <View style={[styles.loadingContainer, { backgroundColor: colors.background }]}>
+                <ActivityIndicator size="large" color={colors.primary} />
             </View>
         );
     }
 
     return (
-        <SafeAreaView style={styles.container}>
+        <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
             <Stack.Screen options={{
                 headerShown: true,
                 title: 'Our Location',
-                headerTitleStyle: { color: '#fff' },
-                headerStyle: { backgroundColor: '#000' },
+                headerTitleStyle: { color: colors.textMain, fontWeight: '800' },
+                headerStyle: { backgroundColor: colors.surface },
                 headerTransparent: false,
-                headerTintColor: '#000',
-                headerLeft: () => <BackButton />
+                headerTintColor: colors.textMain,
+                headerLeft: () => <BackButton color={colors.textMain} />
             }} />
 
             <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-                <View style={styles.card}>
-                    <View style={styles.iconCircle}>
-                        <Ionicons name="location" size={32} color="#FFF" />
+                <View style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.cardShadow, borderColor: colors.bgLight }]}>
+                    <View style={[styles.iconCircle, { backgroundColor: colors.primary, shadowColor: colors.primary }]}>
+                        <Ionicons name="location" size={32} color={colors.white} />
                     </View>
 
-                    <Text style={styles.title}>Visit Us</Text>
-                    <Text style={styles.address}>{info?.address || 'Loading address...'}</Text>
+                    <Text style={[styles.title, { color: colors.textMain }]}>Visit Us</Text>
+                    <Text style={[styles.address, { color: colors.textMuted }]}>{info?.address || 'Loading address...'}</Text>
 
-                    <TouchableOpacity style={styles.mapsButton} onPress={openMaps}>
-                        <Ionicons name="navigate" size={20} color="#FFF" />
-                        <Text style={styles.mapsButtonText}>Get Directions</Text>
+                    <TouchableOpacity style={[styles.mapsButton, { backgroundColor: colors.textMain, shadowColor: colors.cardShadow }]} onPress={openMaps}>
+                        <Ionicons name="navigate" size={20} color={colors.surface} />
+                        <Text style={[styles.mapsButtonText, { color: colors.surface }]}>Get Directions</Text>
                     </TouchableOpacity>
                 </View>
 
-                <View style={[styles.card, { marginTop: 20 }]}>
+                <View style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.cardShadow, borderColor: colors.bgLight, marginTop: 20 }]}>
                     <View style={styles.sectionHeader}>
-                        <Ionicons name="time-outline" size={24} color={Colors.primary} />
-                        <Text style={styles.sectionTitle}>Opening Hours</Text>
+                        <Ionicons name="time-outline" size={24} color={colors.primary} />
+                        <Text style={[styles.sectionTitle, { color: colors.textMain }]}>Opening Hours</Text>
                     </View>
 
                     <View style={styles.hoursContainer}>
                         {info?.openingHours.split('\n').map((line, index) => (
-                            <View key={index} style={styles.hourRow}>
-                                <Text style={styles.hourText}>{line}</Text>
+                            <View key={index} style={[styles.hourRow, { borderBottomColor: colors.bgLight }]}>
+                                <Text style={[styles.hourText, { color: colors.textMain }]}>{line}</Text>
                             </View>
                         ))}
                     </View>
                 </View>
 
-                <View style={styles.infoBox}>
-                    <Ionicons name="information-circle" size={24} color={Colors.primary} />
-                    <Text style={styles.infoText}>
+                <View style={[styles.infoBox, { backgroundColor: colors.primary + '10', borderColor: colors.primary + '20' }]}>
+                    <Ionicons name="information-circle" size={24} color={colors.primary} />
+                    <Text style={[styles.infoText, { color: colors.textMain }]}>
                         Order through our app for exclusive rewards and faster pickup!
                     </Text>
                 </View>
@@ -114,7 +117,6 @@ export default function LocationScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7FAFC',
     },
     loadingContainer: {
         flex: 1,
@@ -125,90 +127,90 @@ const styles = StyleSheet.create({
         padding: 20,
     },
     card: {
-        backgroundColor: '#FFF',
-        borderRadius: 24,
+        borderRadius: 28,
         padding: 24,
         alignItems: 'center',
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.05,
-        shadowRadius: 10,
+        shadowRadius: 15,
         elevation: 2,
+        borderWidth: 1,
     },
     iconCircle: {
-        width: 64,
-        height: 64,
-        borderRadius: 32,
-        backgroundColor: Colors.primary,
+        width: 72,
+        height: 72,
+        borderRadius: 24,
         justifyContent: 'center',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 20,
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.2,
+        shadowRadius: 12,
+        elevation: 6,
     },
     title: {
-        fontSize: 24,
-        fontWeight: 'bold',
-        color: '#1A202C',
+        fontSize: Typography.fontSize.xl,
+        fontWeight: '900',
         marginBottom: 12,
     },
     address: {
         fontSize: 16,
-        color: '#718096',
         textAlign: 'center',
         lineHeight: 24,
         marginBottom: 24,
+        fontWeight: '500',
     },
     mapsButton: {
-        backgroundColor: '#2D3748',
         flexDirection: 'row',
         alignItems: 'center',
-        paddingVertical: 14,
-        paddingHorizontal: 24,
-        borderRadius: 16,
+        paddingVertical: 16,
+        paddingHorizontal: 28,
+        borderRadius: 20,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 10,
+        elevation: 4,
     },
     mapsButtonText: {
-        color: '#FFF',
         fontSize: 16,
-        fontWeight: 'bold',
+        fontWeight: '800',
         marginLeft: 10,
     },
     sectionHeader: {
         flexDirection: 'row',
         alignItems: 'center',
         alignSelf: 'flex-start',
-        marginBottom: 20,
+        marginBottom: 24,
     },
     sectionTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#1A202C',
-        marginLeft: 12,
+        fontSize: Typography.fontSize.lg,
+        fontWeight: '800',
+        marginLeft: 14,
     },
     hoursContainer: {
         width: '100%',
     },
     hourRow: {
-        paddingVertical: 12,
+        paddingVertical: 14,
         borderBottomWidth: 1,
-        borderBottomColor: '#EDF2F7',
     },
     hourText: {
         fontSize: 15,
-        color: '#4A5568',
-        fontWeight: '500',
+        fontWeight: '600',
     },
     infoBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: Colors.primary + '10',
-        borderRadius: 16,
-        padding: 16,
-        marginTop: 30,
+        borderRadius: 20,
+        padding: 20,
+        marginTop: 32,
+        borderWidth: 1,
     },
     infoText: {
         flex: 1,
         fontSize: 14,
-        color: '#2D3748',
-        marginLeft: 12,
-        lineHeight: 20,
+        marginLeft: 14,
+        lineHeight: 22,
+        fontWeight: '600',
     },
 });

@@ -16,6 +16,7 @@ import { Stack, useRouter } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import { Colors } from '@/src/constants/colors';
+import { Typography } from '@/src/constants/typography';
 import { BackButton } from '@/components/BackButton';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { userService } from '@/src/services/users';
@@ -55,7 +56,7 @@ export default function ProfileScreen() {
                 headerTransparent: true,
                 headerTintColor: '#FFF',
                 headerTitleStyle: { fontWeight: 'bold' },
-                headerLeft: () => <BackButton light={true} />
+                headerLeft: () => <BackButton color={Colors.white} />
             }} />
 
             <KeyboardAvoidingView
@@ -168,7 +169,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F7FAFC',
+        backgroundColor: Colors.bgLight,
     },
     scrollContent: {
         flexGrow: 1,
@@ -193,10 +194,10 @@ const styles = StyleSheet.create({
         borderRadius: 50,
         backgroundColor: 'rgba(255,255,255,0.2)',
         borderWidth: 4,
-        borderColor: '#FFF',
+        borderColor: Colors.white,
         alignItems: 'center',
         justifyContent: 'center',
-        shadowColor: '#000',
+        shadowColor: Colors.cardShadow,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.1,
         shadowRadius: 10,
@@ -204,25 +205,25 @@ const styles = StyleSheet.create({
     avatarText: {
         fontSize: 40,
         fontWeight: 'bold',
-        color: '#FFF',
+        color: Colors.white,
     },
     editAvatarBtn: {
         position: 'absolute',
         bottom: 0,
         right: 0,
-        backgroundColor: '#2D3748',
+        backgroundColor: Colors.secondary,
         width: 32,
         height: 32,
         borderRadius: 16,
         alignItems: 'center',
         justifyContent: 'center',
         borderWidth: 2,
-        borderColor: '#FFF',
+        borderColor: Colors.white,
     },
     userName: {
-        fontSize: 24,
+        fontSize: Typography.fontSize['3xl'],
         fontWeight: 'bold',
-        color: '#FFF',
+        color: Colors.white,
         marginBottom: 4,
     },
     userRole: {
@@ -240,22 +241,22 @@ const styles = StyleSheet.create({
         marginBottom: 20,
     },
     label: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#4A5568',
+        fontSize: Typography.fontSize.sm,
+        fontWeight: '700',
+        color: Colors.textMain,
         marginBottom: 8,
         marginLeft: 4,
     },
     inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF',
+        backgroundColor: Colors.white,
         borderRadius: 16,
         paddingHorizontal: 16,
         height: 56,
         borderWidth: 1,
-        borderColor: '#E2E8F0',
-        shadowColor: '#000',
+        borderColor: Colors.border,
+        shadowColor: Colors.cardShadow,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 5,
@@ -266,22 +267,22 @@ const styles = StyleSheet.create({
     },
     input: {
         flex: 1,
-        fontSize: 16,
-        color: '#2D3748',
+        fontSize: Typography.fontSize.base,
+        color: Colors.textMain,
         height: '100%',
     },
     disabledInput: {
-        backgroundColor: '#EDF2F7',
-        borderColor: '#CBD5E0',
+        backgroundColor: Colors.bgLight,
+        borderColor: Colors.border,
     },
     disabledText: {
         flex: 1,
-        fontSize: 16,
-        color: '#718096',
+        fontSize: Typography.fontSize.base,
+        color: Colors.textMuted,
     },
     helperText: {
         fontSize: 12,
-        color: '#A0AEC0',
+        color: Colors.textMuted,
         marginTop: 6,
         marginLeft: 4,
     },
@@ -300,8 +301,8 @@ const styles = StyleSheet.create({
         elevation: 8,
     },
     saveBtnText: {
-        color: '#FFF',
-        fontSize: 18,
+        color: Colors.white,
+        fontSize: Typography.fontSize.lg,
         fontWeight: 'bold',
         marginRight: 8,
     },
@@ -313,8 +314,8 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     backBtnText: {
-        color: '#718096',
-        fontSize: 16,
+        color: Colors.textMuted,
+        fontSize: Typography.fontSize.base,
         fontWeight: '600',
     },
     quickAccess: {
@@ -325,15 +326,17 @@ const styles = StyleSheet.create({
     },
     quickBtn: {
         flex: 1,
-        backgroundColor: '#FFF',
+        backgroundColor: Colors.white,
         padding: 16,
         borderRadius: 20,
         alignItems: 'center',
-        shadowColor: '#000',
+        shadowColor: Colors.cardShadow,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 5,
         elevation: 2,
+        borderWidth: 1,
+        borderColor: Colors.bgLight,
     },
     quickIcon: {
         width: 48,
@@ -345,7 +348,7 @@ const styles = StyleSheet.create({
     },
     quickText: {
         fontWeight: 'bold',
-        color: '#2D3748',
+        color: Colors.textMain,
         fontSize: 14,
     },
 });

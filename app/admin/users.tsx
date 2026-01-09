@@ -4,6 +4,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { userService } from '../../src/services';
 import { User } from '../../src/types';
 import { Colors } from '../../src/constants/colors';
+import { Typography } from '../../src/constants/typography';
 import { Stack } from 'expo-router';
 import { BackButton } from '@/components/BackButton';
 
@@ -106,53 +107,120 @@ export default function ManageUsers() {
 }
 
 const styles = StyleSheet.create({
-    container: { flex: 1, backgroundColor: '#F8F9FA' },
-    centerContainer: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+    container: {
+        flex: 1,
+        backgroundColor: Colors.bgLight,
+    },
+    centerContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: Colors.bgLight,
+    },
     searchContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF',
-        margin: 16,
-        paddingHorizontal: 12,
-        borderRadius: 12,
+        backgroundColor: Colors.white,
+        margin: 20,
+        paddingHorizontal: 16,
+        borderRadius: 16,
         borderWidth: 1,
-        borderColor: '#EEE'
+        borderColor: Colors.border,
+        shadowColor: Colors.cardShadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 5,
+        elevation: 2,
     },
-    searchInput: { flex: 1, padding: 12, fontSize: 16 },
-    userList: { flex: 1 },
-    listContent: { padding: 16, paddingBottom: 40 },
+    searchInput: {
+        flex: 1,
+        padding: 14,
+        fontSize: Typography.fontSize.base,
+        color: Colors.textMain,
+    },
+    userList: {
+        flex: 1,
+    },
+    listContent: {
+        padding: 20,
+        paddingBottom: 40,
+    },
     userCard: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#FFF',
+        backgroundColor: Colors.white,
         padding: 16,
-        borderRadius: 16,
+        borderRadius: 24,
         marginBottom: 12,
-        shadowColor: '#000',
+        shadowColor: Colors.cardShadow,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 10,
-        elevation: 2
+        elevation: 2,
+        borderWidth: 1,
+        borderColor: Colors.bgLight,
     },
     avatar: {
-        width: 50,
-        height: 50,
-        borderRadius: 25,
-        backgroundColor: Colors.primary + '20',
+        width: 54,
+        height: 54,
+        borderRadius: 18,
+        backgroundColor: Colors.primary + '15',
         justifyContent: 'center',
         alignItems: 'center',
-        marginRight: 16
+        marginRight: 16,
     },
-    avatarText: { fontSize: 20, fontWeight: 'bold', color: Colors.primary },
-    userInfo: { flex: 1 },
-    userHeader: { flexDirection: 'row', alignItems: 'center', gap: 8, marginBottom: 4 },
-    userName: { fontSize: 18, fontWeight: 'bold', color: '#333' },
-    badge: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 4 },
-    adminBadge: { backgroundColor: '#e74c3c20' },
-    userBadge: { backgroundColor: '#2ecc7120' },
-    badgeText: { fontSize: 10, fontWeight: 'bold', color: '#333' },
-    userDetail: { fontSize: 14, color: '#666', marginBottom: 2 },
-    copyButton: { padding: 8 },
-    emptyContainer: { alignItems: 'center', marginTop: 100 },
-    emptyText: { color: '#999', fontSize: 16 }
+    avatarText: {
+        fontSize: 22,
+        fontWeight: '800',
+        color: Colors.primary,
+    },
+    userInfo: {
+        flex: 1,
+    },
+    userHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 8,
+        marginBottom: 4,
+    },
+    userName: {
+        fontSize: Typography.fontSize.md,
+        fontWeight: '800',
+        color: Colors.textMain,
+    },
+    badge: {
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 8,
+    },
+    adminBadge: {
+        backgroundColor: Colors.error + '15',
+    },
+    userBadge: {
+        backgroundColor: Colors.primary + '15',
+    },
+    badgeText: {
+        fontSize: 10,
+        fontWeight: '800',
+        color: Colors.textMain,
+        textTransform: 'uppercase',
+    },
+    userDetail: {
+        fontSize: 13,
+        color: Colors.textMuted,
+        marginBottom: 2,
+        fontWeight: '600',
+    },
+    copyButton: {
+        padding: 8,
+    },
+    emptyContainer: {
+        alignItems: 'center',
+        marginTop: 100,
+    },
+    emptyText: {
+        color: Colors.textMuted,
+        fontSize: Typography.fontSize.md,
+        fontWeight: '600',
+    },
 });

@@ -37,7 +37,7 @@ export const reviewService = {
     },
 
     delete: async (id: number) => {
-        const response = await api.delete(`/reviews/${id}`);
+        const response = await api.post(`/reviews/delete/${id}`);
         return response.data;
     }
 };

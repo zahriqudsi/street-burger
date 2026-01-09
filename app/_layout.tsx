@@ -12,6 +12,7 @@ import { Colors } from '@/src/constants/colors';
 import { AuthProvider } from '@/src/contexts/AuthContext';
 import { CartProvider } from '@/src/contexts/CartContext';
 import { NotificationProvider } from '@/src/contexts/NotificationContext';
+import { ToastProvider } from '@/src/contexts/ToastContext';
 
 // Custom theme based on Street Burger brand
 const StreetBurgerLightTheme = {
@@ -48,35 +49,44 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
-      <CartProvider>
-        <NotificationProvider>
-          <ThemeProvider value={theme}>
-            <Stack screenOptions={{ headerShown: false }}>
-              <Stack.Screen name="index" options={{ gestureEnabled: false }} />
-              <Stack.Screen name="welcome" options={{ gestureEnabled: false }} />
-              <Stack.Screen name="(auth)" />
-              <Stack.Screen name="(tabs)" />
-              <Stack.Screen name="admin" />
-              <Stack.Screen
-                name="profile"
-                options={{
-                  headerShown: true,
-                  title: 'Account Settings',
-                }}
-              />
-              <Stack.Screen
-                name="inbox/index"
-                options={{
-                  headerShown: true,
-                  title: 'Notifications',
-                  presentation: 'modal',
-                }}
-              />
-            </Stack>
-            <StatusBar style="auto" />
-          </ThemeProvider>
-        </NotificationProvider>
-      </CartProvider>
+      <ToastProvider>
+        <CartProvider>
+          <NotificationProvider>
+            <ThemeProvider value={theme}>
+              <Stack screenOptions={{
+                headerShown: false,
+                contentStyle: { backgroundColor: theme.colors.background }
+              }}>
+                <Stack.Screen name="index" options={{ gestureEnabled: false }} />
+                <Stack.Screen name="welcome" options={{ gestureEnabled: false }} />
+                <Stack.Screen name="(auth)" />
+                <Stack.Screen name="(tabs)" />
+                <Stack.Screen name="admin" />
+                <Stack.Screen
+                  name="profile"
+                  options={{
+                    headerShown: true,
+                    title: 'Account Settings',
+                    headerStyle: { backgroundColor: theme.colors.card },
+                    headerTintColor: theme.colors.text,
+                  }}
+                />
+                <Stack.Screen
+                  name="inbox/index"
+                  options={{
+                    headerShown: true,
+                    title: 'Notifications',
+                    presentation: 'modal',
+                    headerStyle: { backgroundColor: theme.colors.card },
+                    headerTintColor: theme.colors.text,
+                  }}
+                />
+              </Stack>
+              <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} translucent />
+            </ThemeProvider>
+          </NotificationProvider>
+        </CartProvider>
+      </ToastProvider>
     </AuthProvider>
   );
 }

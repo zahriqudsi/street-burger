@@ -28,6 +28,7 @@ import { Colors } from '@/src/constants/colors';
 import { useAuth } from '@/src/contexts/AuthContext';
 import { useRouter } from 'expo-router';
 import { useNotifications } from '@/src/contexts/NotificationContext';
+import { useAppColors } from '@/src/hooks/useAppColors';
 
 const { width } = Dimensions.get('window');
 const MENU_WIDTH = width * 0.75;
@@ -41,15 +42,12 @@ export const SideMenu: React.FC<SideMenuProps> = ({ isVisible, onClose }) => {
     const { isAuthenticated, user, signOut } = useAuth();
     const { unreadCount } = useNotifications();
     const router = useRouter();
+    const colors = useAppColors();
 
-    // Internal state to handle delayed unmounting
     const [renderMenu, setRenderMenu] = React.useState(isVisible);
-
-    // Animation shared values
     const translateX = useSharedValue(-MENU_WIDTH);
     const backdropOpacity = useSharedValue(0);
 
-    // Sync visibility and trigger transitions
     useEffect(() => {
         if (isVisible) {
             setRenderMenu(true);
@@ -60,7 +58,6 @@ export const SideMenu: React.FC<SideMenuProps> = ({ isVisible, onClose }) => {
             });
             backdropOpacity.value = withTiming(1, { duration: 400 });
         } else {
-            // Initiate exit animation
             translateX.value = withTiming(-MENU_WIDTH, { duration: 300 }, (finished) => {
                 if (finished) {
                     runOnJS(setRenderMenu)(false);
@@ -82,7 +79,6 @@ export const SideMenu: React.FC<SideMenuProps> = ({ isVisible, onClose }) => {
 
     const onPanGesture = (event: any) => {
         const { translationX } = event.nativeEvent;
-        // Only allow swiping to the left (closing)
         if (translationX <= 0) {
             translateX.value = translationX;
         }
@@ -90,7 +86,6 @@ export const SideMenu: React.FC<SideMenuProps> = ({ isVisible, onClose }) => {
 
     const onPanEnd = (event: any) => {
         const { translationX, velocityX } = event.nativeEvent;
-        // Sensitivity for closing
         if (translationX < -MENU_WIDTH / 4 || velocityX < -500) {
             closeMenu();
         } else {
@@ -150,99 +145,95 @@ export const SideMenu: React.FC<SideMenuProps> = ({ isVisible, onClose }) => {
     return (
         <GestureHandlerRootView style={styles.root}>
             <View style={StyleSheet.absoluteFill}>
-                {/* Backdrop */}
                 <Animated.View style={[styles.backdrop, animatedBackdropStyle]}>
                     <Pressable style={StyleSheet.absoluteFill} onPress={closeMenu}>
-                        <BlurView intensity={20} tint="dark" style={StyleSheet.absoluteFill} />
+                        <BlurView intensity={20} tint={colors.mode === 'dark' ? 'dark' : 'light'} style={StyleSheet.absoluteFill} />
                     </Pressable>
                 </Animated.View>
 
-                {/* Main Menu with Pan Gesture */}
                 <PanGestureHandler
                     onGestureEvent={onPanGesture}
                     onHandlerStateChange={(e) => e.nativeEvent.state === State.END && onPanEnd(e)}
                 >
-                    <Animated.View style={[styles.menuContainer, animatedMenuStyle]}>
+                    <Animated.View style={[styles.menuContainer, animatedMenuStyle, { backgroundColor: colors.surface }]}>
                         <SafeAreaView style={styles.safeArea}>
-                            {/* Header Section */}
-                            <View style={styles.header}>
+                            <View style={[styles.header, { borderBottomColor: colors.bgLight }]}>
                                 <View style={styles.profileSection}>
-                                    <View style={styles.avatarGradient}>
+                                    <View style={[styles.avatarGradient, { backgroundColor: colors.primary, shadowColor: colors.primary }]}>
                                         <Text style={styles.avatarText}>
                                             {isAuthenticated && user ? user.name[0].toUpperCase() : 'G'}
                                         </Text>
                                     </View>
                                     <View style={styles.userTextContainer}>
-                                        <Text style={styles.userName} numberOfLines={1}>
+                                        <Text style={[styles.userName, { color: colors.textMain }]} numberOfLines={1}>
                                             {isAuthenticated && user ? user.name : 'Welcome Guest'}
                                         </Text>
-                                        <Text style={styles.userSubtitle}>
+                                        <Text style={[styles.userSubtitle, { color: colors.textMuted }]}>
                                             {isAuthenticated ? 'Premium Member' : 'Explore our delicious menu'}
                                         </Text>
                                     </View>
                                 </View>
-                                <TouchableOpacity onPress={closeMenu} style={styles.closeBtn}>
-                                    <Ionicons name="chevron-back" size={24} color="#2D3748" />
+                                <TouchableOpacity onPress={closeMenu} style={[styles.closeBtn, { backgroundColor: colors.bgLight }]}>
+                                    <Ionicons name="chevron-back" size={24} color={colors.textMain} />
                                 </TouchableOpacity>
                             </View>
 
-                            {/* Menu Scrollable Content */}
                             <ScrollView
                                 style={styles.scrollContent}
                                 showsVerticalScrollIndicator={false}
                                 contentContainerStyle={styles.scrollInner}
                             >
-                                <Text style={styles.sectionLabel}>Discover</Text>
+                                <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>Discover</Text>
                                 {menuItems.map((item) => (
                                     <TouchableOpacity
                                         key={item.id}
                                         style={styles.menuLink}
                                         onPress={() => handleNavigation(item.path)}
                                     >
-                                        <View style={styles.iconContainer}>
-                                            <Ionicons name={item.icon as any} size={22} color={Colors.primary} />
+                                        <View style={[styles.iconContainer, { backgroundColor: colors.primary + '15' }]}>
+                                            <Ionicons name={item.icon as any} size={22} color={colors.primary} />
                                         </View>
-                                        <Text style={styles.linkText}>{item.label}</Text>
+                                        <Text style={[styles.linkText, { color: colors.textMain }]}>{item.label}</Text>
                                         {(item.badge ?? 0) > 0 && (
-                                            <View style={styles.badge}>
+                                            <View style={[styles.badge, { backgroundColor: colors.error }]}>
                                                 <Text style={styles.badgeText}>{item.badge}</Text>
                                             </View>
                                         )}
-                                        <Ionicons name="chevron-forward" size={14} color="#CBD5E0" />
+                                        <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
                                     </TouchableOpacity>
                                 ))}
 
                                 {isAuthenticated && (
                                     <>
-                                        <View style={styles.divider} />
-                                        <Text style={styles.sectionLabel}>My Profile</Text>
+                                        <View style={[styles.divider, { backgroundColor: colors.bgLight }]} />
+                                        <Text style={[styles.sectionLabel, { color: colors.textMuted }]}>My Profile</Text>
                                         <TouchableOpacity
                                             style={styles.menuLink}
                                             onPress={() => handleNavigation('/profile')}
                                         >
-                                            <View style={styles.iconContainer}>
-                                                <Ionicons name="person-outline" size={22} color={Colors.primary} />
+                                            <View style={[styles.iconContainer, { backgroundColor: colors.primary + '15' }]}>
+                                                <Ionicons name="person-outline" size={22} color={colors.primary} />
                                             </View>
-                                            <Text style={styles.linkText}>Account Settings</Text>
-                                            <Ionicons name="chevron-forward" size={14} color="#CBD5E0" />
+                                            <Text style={[styles.linkText, { color: colors.textMain }]}>Account Settings</Text>
+                                            <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
                                         </TouchableOpacity>
 
                                         <TouchableOpacity
                                             style={styles.menuLink}
                                             onPress={handleLogout}
                                         >
-                                            <View style={[styles.iconContainer, { backgroundColor: '#FF475715' }]}>
-                                                <Ionicons name="log-out-outline" size={22} color="#FF4757" />
+                                            <View style={[styles.iconContainer, { backgroundColor: colors.error + '15' }]}>
+                                                <Ionicons name="log-out-outline" size={22} color={colors.error} />
                                             </View>
-                                            <Text style={[styles.linkText, { color: '#FF4757' }]}>Logout</Text>
-                                            <Ionicons name="chevron-forward" size={14} color="#CBD5E0" />
+                                            <Text style={[styles.linkText, { color: colors.error }]}>Logout</Text>
+                                            <Ionicons name="chevron-forward" size={14} color={colors.textMuted} />
                                         </TouchableOpacity>
                                     </>
                                 )}
 
                                 {!isAuthenticated && (
                                     <TouchableOpacity
-                                        style={styles.loginBanner}
+                                        style={[styles.loginBanner, { backgroundColor: colors.primary, shadowColor: colors.primary }]}
                                         onPress={() => handleNavigation('/(auth)/login')}
                                     >
                                         <Ionicons name="log-in-outline" size={20} color="#FFF" />
@@ -251,14 +242,13 @@ export const SideMenu: React.FC<SideMenuProps> = ({ isVisible, onClose }) => {
                                 )}
                             </ScrollView>
 
-                            {/* Footer Section */}
-                            <View style={styles.footer}>
+                            <View style={[styles.footer, { borderTopColor: colors.bgLight }]}>
                                 <View style={styles.socials}>
-                                    <Ionicons name="logo-facebook" size={20} color="#A0AEC0" style={styles.socialIcon} />
-                                    <Ionicons name="logo-instagram" size={20} color="#A0AEC0" style={styles.socialIcon} />
-                                    <Ionicons name="logo-whatsapp" size={20} color="#A0AEC0" />
+                                    <Ionicons name="logo-facebook" size={20} color={colors.textMuted} style={styles.socialIcon} />
+                                    <Ionicons name="logo-instagram" size={20} color={colors.textMuted} style={styles.socialIcon} />
+                                    <Ionicons name="logo-whatsapp" size={20} color={colors.textMuted} />
                                 </View>
-                                <Text style={styles.footerText}>v1.0.6 • Smooth Glide Edition</Text>
+                                <Text style={[styles.footerText, { color: colors.textMuted }]}>v1.0.6 • Smooth Glide Edition</Text>
                             </View>
                         </SafeAreaView>
                     </Animated.View>
@@ -284,8 +274,6 @@ const styles = StyleSheet.create({
     menuContainer: {
         width: MENU_WIDTH,
         height: '100%',
-        backgroundColor: '#FFFFFF',
-        shadowColor: '#000',
         shadowOffset: { width: 10, height: 0 },
         shadowOpacity: 0.1,
         shadowRadius: 20,
@@ -302,7 +290,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         borderBottomWidth: 1,
-        borderBottomColor: '#F7FAFC',
     },
     profileSection: {
         flexDirection: 'row',
@@ -313,10 +300,8 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 24,
-        backgroundColor: Colors.primary,
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: Colors.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 6,
@@ -333,16 +318,13 @@ const styles = StyleSheet.create({
     userName: {
         fontSize: 17,
         fontWeight: '700',
-        color: '#1A202C',
         marginBottom: 2,
     },
     userSubtitle: {
         fontSize: 12,
-        color: '#718096',
     },
     closeBtn: {
         padding: 8,
-        backgroundColor: '#F7FAFC',
         borderRadius: 12,
     },
     scrollContent: {
@@ -354,7 +336,6 @@ const styles = StyleSheet.create({
     sectionLabel: {
         fontSize: 11,
         fontWeight: 'bold',
-        color: '#A0AEC0',
         textTransform: 'uppercase',
         letterSpacing: 1.5,
         marginBottom: 16,
@@ -370,7 +351,6 @@ const styles = StyleSheet.create({
         width: 38,
         height: 38,
         borderRadius: 12,
-        backgroundColor: Colors.primary + '10',
         justifyContent: 'center',
         alignItems: 'center',
         marginRight: 14,
@@ -379,10 +359,8 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 15,
         fontWeight: '600',
-        color: '#2D3748',
     },
     badge: {
-        backgroundColor: '#FF4757',
         borderRadius: 10,
         minWidth: 20,
         height: 20,
@@ -398,18 +376,15 @@ const styles = StyleSheet.create({
     },
     divider: {
         height: 1,
-        backgroundColor: '#EDF2F7',
         marginVertical: 20,
     },
     loginBanner: {
-        backgroundColor: Colors.primary,
         borderRadius: 16,
         padding: 16,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 20,
-        shadowColor: Colors.primary,
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.2,
         shadowRadius: 12,
@@ -424,7 +399,6 @@ const styles = StyleSheet.create({
         padding: 24,
         alignItems: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#F7FAFC',
     },
     socials: {
         flexDirection: 'row',
@@ -435,7 +409,6 @@ const styles = StyleSheet.create({
     },
     footerText: {
         fontSize: 11,
-        color: '#A0AEC0',
         fontWeight: '500',
     },
 });

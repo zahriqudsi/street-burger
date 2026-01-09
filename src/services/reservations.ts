@@ -14,7 +14,7 @@ export const reservationService = {
 
     // Update a reservation
     update: async (id: number, data: Partial<ReservationRequest>): Promise<Reservation> => {
-        const response = await api.put<ApiResponse<Reservation>>(`/reservations/update/${id}`, data);
+        const response = await api.post<ApiResponse<Reservation>>(`/reservations/update/${id}`, data);
         return response.data.data;
     },
 
@@ -32,7 +32,7 @@ export const reservationService = {
 
     // Cancel/Delete a reservation
     cancel: async (id: number): Promise<void> => {
-        await api.delete(`/reservations/delete/${id}`);
+        await api.post(`/reservations/delete/${id}`);
     },
 
     // Get all reservations (admin)
@@ -43,7 +43,7 @@ export const reservationService = {
 
     // ADMIN: Confirm a reservation
     confirm: async (id: number): Promise<Reservation> => {
-        const response = await api.put<ApiResponse<Reservation>>(`/reservations/confirm/${id}`, {});
+        const response = await api.post<ApiResponse<Reservation>>(`/reservations/confirm/${id}`, {});
         return response.data.data;
     },
 };

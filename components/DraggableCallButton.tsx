@@ -10,6 +10,7 @@ import {
     Platform
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
+import { useAppColors } from '@/src/hooks/useAppColors';
 
 const { width, height } = Dimensions.get('window');
 const BUTTON_SIZE = 56;
@@ -19,6 +20,7 @@ interface DraggableCallButtonProps {
 }
 
 export const DraggableCallButton: React.FC<DraggableCallButtonProps> = ({ phoneNumber }) => {
+    const colors = useAppColors();
     // Initial position: Bottom Right
     const pan = useRef(new Animated.ValueXY({ x: width - BUTTON_SIZE - 24, y: height - 150 })).current;
 
@@ -68,11 +70,11 @@ export const DraggableCallButton: React.FC<DraggableCallButtonProps> = ({ phoneN
             {...panResponder.panHandlers}
         >
             <TouchableOpacity
-                style={styles.button}
+                style={[styles.button, { backgroundColor: colors.textMain, shadowColor: colors.cardShadow, borderColor: colors.border }]}
                 onPress={handlePress}
                 activeOpacity={0.8}
             >
-                <Ionicons name="call" size={24} color="#FFF" />
+                <Ionicons name="call" size={24} color={colors.surface} />
             </TouchableOpacity>
         </Animated.View>
     );
@@ -89,15 +91,12 @@ const styles = StyleSheet.create({
         width: BUTTON_SIZE,
         height: BUTTON_SIZE,
         borderRadius: BUTTON_SIZE / 2,
-        backgroundColor: '#000', // Black premium look
         justifyContent: 'center',
         alignItems: 'center',
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 5,
         elevation: 8,
         borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.1)',
     },
 });

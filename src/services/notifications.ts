@@ -26,7 +26,7 @@ export const notificationService = {
 
     // Mark notification as read
     markAsRead: async (id: number): Promise<Notification> => {
-        const response = await api.put<ApiResponse<Notification>>(`/notification/markRead/${id}`);
+        const response = await api.post<ApiResponse<Notification>>(`/notification/markRead/${id}`);
         return response.data.data;
     },
 
@@ -38,13 +38,13 @@ export const notificationService = {
 
     // ADMIN: Update notification
     update: async (id: number, notification: Partial<Notification>): Promise<Notification> => {
-        const response = await api.put<ApiResponse<Notification>>(`/notification/updateById/${id}`, notification);
+        const response = await api.post<ApiResponse<Notification>>(`/notification/updateById/${id}`, notification);
         return response.data.data;
     },
 
     // ADMIN: Delete notification
     delete: async (id: number): Promise<void> => {
-        await api.delete(`/notification/deleteById/${id}`);
+        await api.post(`/notification/deleteById/${id}`);
     },
 };
 

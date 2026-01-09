@@ -14,15 +14,18 @@ import { useAuth } from '@/src/contexts/AuthContext';
 import { useNotifications } from '@/src/contexts/NotificationContext';
 import { SideMenu } from '@/components/SideMenu';
 
+import { useAppColors } from '@/src/hooks/useAppColors';
+
 // Modern Tab Icon Component with Animation
-const TabIcon = ({ name, color, focused }: { name: keyof typeof Ionicons.glyphMap; color: string; focused: boolean }) => {
+const TabIcon = ({ name, color, focused, colors }: { name: keyof typeof Ionicons.glyphMap; color: string; focused: boolean; colors: any }) => {
   return (
     <View style={[styles.iconContainer, focused && styles.iconContainerFocused]}>
       <Ionicons
         name={name}
-        size={28}
-        color={focused ? '#000' : '#A0AEC0'}
+        size={26}
+        color={focused ? colors.primary : colors.textMuted}
       />
+      {focused && <View style={[styles.focusDot, { backgroundColor: colors.primary }]} />}
     </View>
   );
 };
@@ -37,9 +40,9 @@ const HeaderNotificationIcon = ({ colors }: { colors: any }) => {
         style={styles.headerIcon}
         onPress={() => router.push('/inbox')}
       >
-        <Ionicons name="notifications-outline" size={26} color={colors.text} />
+        <Ionicons name="notifications-outline" size={26} color={colors.textMain} />
         {unreadCount > 0 && (
-          <View style={styles.badge}>
+          <View style={[styles.badge, { backgroundColor: colors.error, borderColor: colors.surface }]}>
             <Text style={styles.badgeText}>
               {unreadCount > 9 ? '9+' : unreadCount}
             </Text>
@@ -51,8 +54,7 @@ const HeaderNotificationIcon = ({ colors }: { colors: any }) => {
 };
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
-  const colors = colorScheme === 'dark' ? Colors.dark : Colors.light;
+  const colors = useAppColors();
   const router = useRouter();
   const { isAuthenticated, user } = useAuth();
   const [isMenuVisible, setIsMenuVisible] = React.useState(false);
@@ -69,40 +71,41 @@ export default function TabLayout() {
     <>
       <Tabs
         screenOptions={{
-          tabBarActiveTintColor: '#FFF',
-          tabBarInactiveTintColor: '#A0AEC0',
+          tabBarActiveTintColor: colors.primary,
+          tabBarInactiveTintColor: colors.textMuted,
           tabBarShowLabel: false,
-          tabBarStyle: styles.tabBar,
+          tabBarStyle: [styles.tabBar, { backgroundColor: colors.surface, shadowColor: colors.cardShadow }],
           headerStyle: {
-            backgroundColor: '#FFF', // Standard white header
-            shadowColor: 'transparent', // Remove header shadow for clean look
+            backgroundColor: colors.surface,
+            shadowColor: 'transparent',
             elevation: 0,
             borderBottomWidth: 1,
-            borderBottomColor: '#F7FAFC'
+            borderBottomColor: colors.bgLight,
           },
-          headerTintColor: '#1A202C',
+          headerTintColor: colors.textMain,
           headerTitleStyle: {
-            fontWeight: '700',
-            fontSize: 18,
+            fontWeight: '800',
+            fontSize: 20,
+            color: colors.textMain,
           },
           headerLeft: () => (
             <TouchableOpacity
               style={styles.headerLeft}
               onPress={() => setIsMenuVisible(true)}
             >
-              <Ionicons name="menu" size={28} color="#1A202C" />
+              <Ionicons name="menu" size={28} color={colors.textMain} />
             </TouchableOpacity>
           ),
-          headerRight: () => <HeaderNotificationIcon colors={{ text: '#1A202C' }} />,
+          headerRight: () => <HeaderNotificationIcon colors={colors} />,
         }}
       >
         <Tabs.Screen
           name="index"
           options={{
             title: 'Home',
-            headerShown: false, // Home has its own header
+            headerShown: false,
             tabBarIcon: ({ focused }) => (
-              <TabIcon name={focused ? "home" : "home-outline"} color="" focused={focused} />
+              <TabIcon name={focused ? "home" : "home-outline"} color="" focused={focused} colors={colors} />
             ),
           }}
         />
@@ -111,34 +114,34 @@ export default function TabLayout() {
           options={{
             title: 'Our Menu',
             tabBarIcon: ({ focused }) => (
-              <TabIcon name={focused ? "fast-food" : "fast-food-outline"} color="" focused={focused} />
+              <TabIcon name={focused ? "fast-food" : "fast-food-outline"} color="" focused={focused} colors={colors} />
             ),
           }}
         />
         <Tabs.Screen
           name="reservation"
           options={{
-            title: 'Table Reservation',
+            title: 'Reservations',
             tabBarIcon: ({ focused }) => (
-              <TabIcon name={focused ? "calendar" : "calendar-outline"} color="" focused={focused} />
+              <TabIcon name={focused ? "calendar" : "calendar-outline"} color="" focused={focused} colors={colors} />
             ),
           }}
         />
         <Tabs.Screen
           name="rewards"
           options={{
-            title: 'Loyalty Rewards',
+            title: 'Rewards',
             tabBarIcon: ({ focused }) => (
-              <TabIcon name={focused ? "gift" : "gift-outline"} color="" focused={focused} />
+              <TabIcon name={focused ? "gift" : "gift-outline"} color="" focused={focused} colors={colors} />
             ),
           }}
         />
         <Tabs.Screen
           name="order"
           options={{
-            title: 'Order History',
+            title: 'My Orders',
             tabBarIcon: ({ focused }) => (
-              <TabIcon name={focused ? "receipt" : "receipt-outline"} color="" focused={focused} />
+              <TabIcon name={focused ? "receipt" : "receipt-outline"} color="" focused={focused} colors={colors} />
             ),
           }}
         />
@@ -152,37 +155,42 @@ export default function TabLayout() {
 }
 
 const styles = StyleSheet.create({
-  // Clean Minimalist Floating Bar
   tabBar: {
     position: 'absolute',
-    bottom: 20, // Lower profile
-    left: 20,   // Wider bar for better spacing
+    bottom: 24,
+    left: 20,
     right: 20,
-    elevation: 4, // Subtle shadow, not too aggressive
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20, // Soft corners, not full capsule
-    height: 60, // Standard touch height
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
+    elevation: 10,
+    backgroundColor: Colors.white,
+    borderRadius: 24,
+    height: 64,
+    shadowColor: Colors.cardShadow,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.15,
+    shadowRadius: 15,
     borderTopWidth: 0,
-    // Spacing
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between', // Even spacing
-    paddingHorizontal: 20, // Inner padding
-    marginHorizontal: 25,
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    marginHorizontal: 10,
   },
   iconContainer: {
-    width: 40,
-    height: 40,
+    width: 48,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
   },
   iconContainerFocused: {
-    // No background, just pure icon focus
-    transform: [{ scale: 1.1 }], // Subtle scale up
+    transform: [{ scale: 1.15 }],
+  },
+  focusDot: {
+    width: 4,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: Colors.primary,
+    position: 'absolute',
+    bottom: 4,
   },
   headerRight: {
     flexDirection: 'row',
@@ -198,17 +206,20 @@ const styles = StyleSheet.create({
   },
   badge: {
     position: 'absolute',
-    right: 0,
-    top: 0,
-    backgroundColor: '#E53E3E',
-    borderRadius: 6,
-    width: 10,
-    height: 10,
+    right: -2,
+    top: -2,
+    backgroundColor: Colors.error,
+    borderRadius: 8,
+    width: 16,
+    height: 16,
     borderWidth: 2,
-    borderColor: '#FFFFFF',
+    borderColor: Colors.white,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   badgeText: {
-    color: 'transparent',
-    fontSize: 0,
+    color: Colors.white,
+    fontSize: 8,
+    fontWeight: '900',
   },
 });

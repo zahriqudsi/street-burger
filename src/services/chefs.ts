@@ -20,7 +20,7 @@ export const chefService = {
 
     // ADMIN: Delete chef
     delete: async (id: number): Promise<void> => {
-        await api.delete(`/chefs/${id}`);
+        await api.post(`/chefs/${id}`);
     },
 };
 

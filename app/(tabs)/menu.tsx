@@ -22,15 +22,17 @@ import {
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useCart } from '@/src/contexts/CartContext';
+import { useAppColors } from '@/src/hooks/useAppColors';
 import { Ionicons } from '@expo/vector-icons';
 
 // Menu Item Card
 const MenuItemCard = ({ item }: { item: MenuItem }) => {
     const { addToCart } = useCart();
+    const colors = useAppColors();
 
     return (
-        <View style={styles.menuItem}>
-            <View style={styles.menuItemImage}>
+        <View style={[styles.menuItem, { backgroundColor: colors.surface, shadowColor: colors.cardShadow }]}>
+            <View style={[styles.menuItemImage, { backgroundColor: colors.bgLight }]}>
                 {item.imageUrl ? (
                     <Image
                         source={{ uri: item.imageUrl.startsWith('http') ? item.imageUrl : `file://${item.imageUrl}` }}
@@ -43,23 +45,23 @@ const MenuItemCard = ({ item }: { item: MenuItem }) => {
             </View>
             <View style={styles.menuItemContent}>
                 <View style={styles.menuItemHeader}>
-                    <Text style={styles.menuItemTitle}>{item.title}</Text>
+                    <Text style={[styles.menuItemTitle, { color: colors.textMain }]}>{item.title}</Text>
                     {item.isPopular && (
                         <View style={styles.popularBadge}>
-                            <Text style={styles.popularBadgeText}>Popular</Text>
+                            <Text style={[styles.popularBadgeText, { color: colors.warning }]}>Popular</Text>
                         </View>
                     )}
                 </View>
-                <Text style={styles.menuItemDescription} numberOfLines={2}>
+                <Text style={[styles.menuItemDescription, { color: colors.textMuted }]} numberOfLines={2}>
                     {item.description}
                 </Text>
                 <View style={styles.itemFooter}>
-                    <Text style={styles.menuItemPrice}>{formatRs(item.price)}</Text>
+                    <Text style={[styles.menuItemPrice, { color: colors.primary }]}>{formatRs(item.price)}</Text>
                     <TouchableOpacity
                         style={styles.addButton}
                         onPress={() => addToCart(item)}
                     >
-                        <Ionicons name="add" size={20} color="#FFF" />
+                        <Ionicons name="add" size={20} color={colors.surface} />
                         <Text style={styles.addButtonText}>Add</Text>
                     </TouchableOpacity>
                 </View>
@@ -68,30 +70,9 @@ const MenuItemCard = ({ item }: { item: MenuItem }) => {
     );
 };
 
-// Order Modal Buttons
-const OrderButtons = ({ info }: { info: RestaurantInfo | null }) => (
-    <View style={styles.orderSection}>
-        <Text style={styles.orderTitle}>Order Online</Text>
-        <View style={styles.orderButtons}>
-            <TouchableOpacity
-                style={[styles.orderButton, { backgroundColor: '#06C167' }]}
-                onPress={() => info?.uberEatsUrl && Linking.openURL(info.uberEatsUrl)}
-            >
-                <Text style={styles.orderButtonIcon}>🚗</Text>
-                <Text style={styles.orderButtonText}>Uber Eats</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                style={[styles.orderButton, { backgroundColor: '#FF5722' }]}
-                onPress={() => info?.pickmeFoodUrl && Linking.openURL(info.pickmeFoodUrl)}
-            >
-                <Text style={styles.orderButtonIcon}>🛵</Text>
-                <Text style={styles.orderButtonText}>PickMe Food</Text>
-            </TouchableOpacity>
-        </View>
-    </View>
-);
 
 export default function MenuScreen() {
+    const colors = useAppColors();
     const [categories, setCategories] = useState<MenuCategory[]>([]);
     const [items, setItems] = useState<MenuItem[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
@@ -134,25 +115,25 @@ export default function MenuScreen() {
         : items;
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             {/* Category Tabs */}
             <ScrollView
                 horizontal
                 showsHorizontalScrollIndicator={false}
-                style={styles.categoryContainer}
+                style={[styles.categoryContainer, { backgroundColor: colors.surface, borderBottomColor: colors.border }]}
                 contentContainerStyle={styles.categoryContent}
             >
                 <TouchableOpacity
                     style={[
                         styles.categoryTab,
-                        !selectedCategory && styles.categoryTabActive,
+                        !selectedCategory ? { backgroundColor: colors.primary, borderColor: colors.primary } : { backgroundColor: colors.bgLight, borderColor: colors.border },
                     ]}
                     onPress={() => setSelectedCategory(null)}
                 >
                     <Text
                         style={[
                             styles.categoryText,
-                            !selectedCategory && styles.categoryTextActive,
+                            !selectedCategory ? { color: colors.white } : { color: colors.textMuted },
                         ]}
                     >
                         All
@@ -163,14 +144,15 @@ export default function MenuScreen() {
                         key={category.id}
                         style={[
                             styles.categoryTab,
-                            selectedCategory === category.id && styles.categoryTabActive,
+                            { backgroundColor: colors.bgLight, borderColor: colors.border },
+                            selectedCategory === category.id && { backgroundColor: colors.primary, borderColor: colors.primary },
                         ]}
                         onPress={() => setSelectedCategory(category.id)}
                     >
                         <Text
                             style={[
                                 styles.categoryText,
-                                selectedCategory === category.id && styles.categoryTextActive,
+                                selectedCategory === category.id ? { color: colors.white } : { color: colors.textMuted },
                             ]}
                         >
                             {category.name}
@@ -184,12 +166,12 @@ export default function MenuScreen() {
                 style={styles.menuList}
                 contentContainerStyle={styles.menuContent}
                 refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />
                 }
             >
                 {loading ? (
                     <View style={styles.loadingContainer}>
-                        <Text style={styles.loadingText}>Loading menu...</Text>
+                        <Text style={[styles.loadingText, { color: colors.textMuted }]}>Loading menu...</Text>
                     </View>
                 ) : filteredItems.length > 0 ? (
                     filteredItems.map((item) => (
@@ -198,13 +180,9 @@ export default function MenuScreen() {
                 ) : (
                     <View style={styles.emptyContainer}>
                         <Text style={styles.emptyEmoji}>🍽️</Text>
-                        <Text style={styles.emptyText}>No items available</Text>
+                        <Text style={[styles.emptyText, { color: colors.textMuted }]}>No items available</Text>
                     </View>
                 )}
-
-                {/* Order Section */}
-                {/* External Options (Optional) */}
-                {/* <OrderButtons info={restaurantInfo} /> */}
             </ScrollView>
 
             {/* Floating Cart Button */}
@@ -214,6 +192,7 @@ export default function MenuScreen() {
 }
 
 const FloatingCartButton = () => {
+    const colors = useAppColors();
     const { count, subtotal } = useCart();
     const router = useRouter();
 
@@ -222,14 +201,14 @@ const FloatingCartButton = () => {
     return (
         <View style={styles.floatContainer}>
             <TouchableOpacity
-                style={styles.floatButton}
+                style={[styles.floatButton, { backgroundColor: colors.primary, shadowColor: colors.cardShadow }]}
                 onPress={() => router.push('/cart')}
             >
-                <View style={styles.floatBadge}>
-                    <Text style={styles.floatBadgeText}>{count}</Text>
+                <View style={[styles.floatBadge, { backgroundColor: colors.white }]}>
+                    <Text style={[styles.floatBadgeText, { color: colors.primary }]}>{count}</Text>
                 </View>
-                <Text style={styles.floatText}>View Basket</Text>
-                <Text style={styles.floatPrice}>{formatRs(subtotal)}</Text>
+                <Text style={[styles.floatText, { color: colors.white }]}>View Basket</Text>
+                <Text style={[styles.floatPrice, { color: colors.white }]}>{formatRs(subtotal)}</Text>
             </TouchableOpacity>
         </View>
     );
@@ -238,215 +217,173 @@ const FloatingCartButton = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: Colors.light.background,
     },
     categoryContainer: {
-        maxHeight: 56,
-        borderBottomWidth: 1,
-        borderBottomColor: Colors.light.border,
+        maxHeight: 60,
     },
     categoryContent: {
-        paddingHorizontal: Spacing.screenPadding,
+        paddingHorizontal: 20,
         paddingVertical: 12,
-        gap: 8,
+        gap: 12,
     },
     categoryTab: {
         paddingHorizontal: 16,
         paddingVertical: 8,
-        borderRadius: Spacing.borderRadius.full,
-        backgroundColor: Colors.light.surface,
-        marginRight: 8,
+        borderRadius: 20,
+        marginRight: 4,
+        borderWidth: 1,
     },
     categoryTabActive: {
         backgroundColor: Colors.primary,
+        borderColor: Colors.primary,
     },
     categoryText: {
-        ...Typography.styles.buttonSmall,
-        color: Colors.light.textSecondary,
-    },
-    categoryTextActive: {
-        color: '#FFFFFF',
+        fontSize: Typography.fontSize.sm,
+        fontWeight: '600',
     },
     menuList: {
         flex: 1,
     },
     menuContent: {
-        padding: Spacing.screenPadding,
-        paddingBottom: 100,
+        padding: 20,
+        paddingBottom: 160, // Clear the floating cart
     },
     menuItem: {
         flexDirection: 'row',
-        backgroundColor: Colors.light.surface,
-        borderRadius: Spacing.borderRadius.lg,
-        padding: Spacing.cardPadding,
-        marginBottom: 12,
-        ...Spacing.shadow.sm,
+        borderRadius: 24,
+        padding: 16,
+        marginBottom: 16,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 10,
+        elevation: 3,
+        borderWidth: 1,
     },
     menuItemImage: {
-        width: 80,
-        height: 80,
-        borderRadius: Spacing.borderRadius.md,
-        backgroundColor: Colors.light.surfaceSecondary,
+        width: 100,
+        height: 100,
+        borderRadius: 20,
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 12,
+        marginRight: 16,
+        overflow: 'hidden',
     },
     menuItemEmoji: {
-        fontSize: 36,
+        fontSize: 40,
     },
     menuItemImageActual: {
         width: '100%',
         height: '100%',
-        borderRadius: Spacing.borderRadius.md,
     },
     menuItemContent: {
         flex: 1,
+        justifyContent: 'center',
     },
     menuItemHeader: {
         flexDirection: 'row',
         alignItems: 'center',
-        gap: 8,
+        justifyContent: 'space-between',
         marginBottom: 4,
     },
     menuItemTitle: {
-        ...Typography.styles.h5,
-        color: Colors.light.text,
+        fontSize: Typography.fontSize.md,
+        fontWeight: '700',
         flex: 1,
     },
     popularBadge: {
-        backgroundColor: Colors.warning,
+        backgroundColor: Colors.warningLight,
         paddingHorizontal: 8,
-        paddingVertical: 2,
-        borderRadius: Spacing.borderRadius.sm,
+        paddingVertical: 4,
+        borderRadius: 8,
     },
     popularBadgeText: {
         fontSize: 10,
-        color: '#FFFFFF',
-        fontWeight: '600',
+        fontWeight: '800',
+        textTransform: 'uppercase',
     },
     menuItemDescription: {
-        ...Typography.styles.bodySmall,
-        color: Colors.light.textSecondary,
-        marginBottom: 8,
-    },
-    menuItemPrice: {
-        ...Typography.styles.price,
-        color: Colors.primary,
-        fontSize: 16,
+        fontSize: Typography.fontSize.sm,
+        marginBottom: 12,
+        lineHeight: 18,
     },
     itemFooter: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginTop: 8,
+    },
+    menuItemPrice: {
+        fontSize: Typography.fontSize.lg,
+        fontWeight: '800',
     },
     addButton: {
-        backgroundColor: Colors.primary,
+        backgroundColor: Colors.textMain,
         flexDirection: 'row',
         alignItems: 'center',
-        paddingHorizontal: 12,
-        paddingVertical: 6,
-        borderRadius: 20,
+        paddingHorizontal: 14,
+        paddingVertical: 8,
+        borderRadius: 12,
         gap: 4,
     },
     addButtonText: {
-        color: '#FFF',
-        fontWeight: 'bold',
+        color: Colors.white,
+        fontWeight: '700',
         fontSize: 12,
-    },
-    orderSection: {
-        marginTop: 24,
-        padding: Spacing.cardPadding,
-        backgroundColor: Colors.light.surface,
-        borderRadius: Spacing.borderRadius.xl,
-        ...Spacing.shadow.md,
-    },
-    orderTitle: {
-        ...Typography.styles.h5,
-        color: Colors.light.text,
-        textAlign: 'center',
-        marginBottom: 16,
-    },
-    orderButtons: {
-        flexDirection: 'row',
-        gap: 12,
-    },
-    orderButton: {
-        flex: 1,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center',
-        paddingVertical: 14,
-        borderRadius: Spacing.borderRadius.lg,
-        gap: 8,
-    },
-    orderButtonIcon: {
-        fontSize: 20,
-    },
-    orderButtonText: {
-        ...Typography.styles.button,
-        color: '#FFFFFF',
-    },
-    loadingContainer: {
-        padding: 40,
-        alignItems: 'center',
-    },
-    loadingText: {
-        ...Typography.styles.body,
-        color: Colors.light.textSecondary,
-    },
-    emptyContainer: {
-        padding: 60,
-        alignItems: 'center',
-    },
-    emptyEmoji: {
-        fontSize: 48,
-        marginBottom: 16,
-    },
-    emptyText: {
-        ...Typography.styles.body,
-        color: Colors.light.textSecondary,
     },
     floatContainer: {
         position: 'absolute',
-        bottom: 90, // Raised to clear the Floating Tab Bar (20 + 60 + 10)
+        bottom: Platform.OS === 'ios' ? 100 : 90,
         left: 20,
         right: 20,
+        zIndex: 100,
     },
     floatButton: {
-        backgroundColor: Colors.primary,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        padding: 16,
-        borderRadius: 16,
-        shadowColor: '#000',
-        shadowOffset: { width: 0, height: 4 },
+        padding: 18,
+        borderRadius: 20,
+        shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.2,
-        shadowRadius: 8,
-        elevation: 5,
+        shadowRadius: 15,
+        elevation: 8,
     },
     floatBadge: {
-        backgroundColor: '#FFF',
-        width: 24,
-        height: 24,
-        borderRadius: 12,
+        width: 28,
+        height: 28,
+        borderRadius: 10,
         alignItems: 'center',
         justifyContent: 'center',
     },
     floatBadgeText: {
-        color: Colors.primary,
-        fontWeight: 'bold',
-        fontSize: 12,
+        fontWeight: '800',
+        fontSize: 14,
     },
     floatText: {
-        color: '#FFF',
-        fontWeight: 'bold',
-        fontSize: 16,
+        fontWeight: '800',
+        fontSize: Typography.fontSize.md,
     },
     floatPrice: {
-        color: '#FFF',
-        fontWeight: 'bold',
-        fontSize: 16,
+        fontWeight: '800',
+        fontSize: Typography.fontSize.md,
+    },
+    loadingContainer: {
+        padding: 60,
+        alignItems: 'center',
+    },
+    loadingText: {
+        fontSize: Typography.fontSize.base,
+        marginTop: 12,
+    },
+    emptyContainer: {
+        padding: 80,
+        alignItems: 'center',
+    },
+    emptyEmoji: {
+        fontSize: 64,
+        marginBottom: 16,
+    },
+    emptyText: {
+        fontSize: Typography.fontSize.md,
+        fontWeight: '600',
     },
 });

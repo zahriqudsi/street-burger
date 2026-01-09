@@ -24,6 +24,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { BlurView } from 'expo-blur';
 import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { format } from 'date-fns';
+import { useAppColors } from '@/src/hooks/useAppColors';
 import { Colors } from '@/src/constants/colors';
 import { Spacing } from '@/src/constants/spacing';
 import { Typography } from '@/src/constants/typography';
@@ -37,6 +38,7 @@ const { width } = Dimensions.get('window');
 const GUEST_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8];
 
 export default function ReservationScreen() {
+    const colors = useAppColors();
     const router = useRouter();
     const { isAuthenticated, user } = useAuth();
     const [reservations, setReservations] = useState<Reservation[]>([]);
@@ -151,14 +153,14 @@ export default function ReservationScreen() {
 
     if (!isAuthenticated) {
         return (
-            <View style={styles.loginRequired}>
-                <Ionicons name="lock-closed-outline" size={80} color={Colors.primary} />
-                <Text style={styles.loginTitle}>Exclusive Experience</Text>
-                <Text style={styles.loginSubtitle}>
+            <View style={[styles.loginRequired, { backgroundColor: colors.background }]}>
+                <Ionicons name="lock-closed-outline" size={80} color={colors.primary} />
+                <Text style={[styles.loginTitle, { color: colors.textMain }]}>Exclusive Experience</Text>
+                <Text style={[styles.loginSubtitle, { color: colors.textMuted }]}>
                     Log in to reserve your table and enjoy the best of Street Burger.
                 </Text>
-                <TouchableOpacity style={styles.loginButton} onPress={() => router.push('/(auth)/login')}>
-                    <Text style={styles.loginButtonText}>Log In to Book</Text>
+                <TouchableOpacity style={[styles.loginButton, { backgroundColor: colors.primary, shadowColor: colors.primary }]} onPress={() => router.push('/(auth)/login')}>
+                    <Text style={[styles.loginButtonText, { color: colors.white }]}>Log In to Book</Text>
                 </TouchableOpacity>
             </View>
         );
@@ -172,20 +174,20 @@ export default function ReservationScreen() {
     };
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: colors.background }]}>
             <Stack.Screen options={{
                 headerShown: true,
                 title: 'Reservations',
                 headerTransparent: true,
-                headerTintColor: '#FFF',
+                headerTintColor: colors.white,
                 headerTitleStyle: { fontWeight: 'bold' },
-                headerLeft: () => null // Hide back button for tabs if needed, but here it's fine
+                headerLeft: () => null
             }} />
 
             <ScrollView
                 style={styles.scrollView}
                 contentContainerStyle={styles.scrollContent}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.primary} />}
             >
                 {/* Hero Section */}
                 <ImageBackground
@@ -199,35 +201,35 @@ export default function ReservationScreen() {
                 </ImageBackground>
 
                 {/* Tab Switcher */}
-                <View style={styles.tabContainer}>
+                <View style={[styles.tabContainer, { backgroundColor: colors.surface, shadowColor: colors.cardShadow }]}>
                     <TouchableOpacity
-                        style={[styles.tab, activeTab === 'book' && styles.activeTab]}
+                        style={[styles.tab, activeTab === 'book' && [styles.activeTab, { backgroundColor: colors.primary }]]}
                         onPress={() => setActiveTab('book')}
                     >
-                        <Text style={[styles.tabText, activeTab === 'book' && styles.activeTabText]}>Reserve Now</Text>
+                        <Text style={[styles.tabText, { color: colors.textMuted }, activeTab === 'book' && [styles.activeTabText, { color: colors.white }]]}>Reserve Now</Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                        style={[styles.tab, activeTab === 'history' && styles.activeTab]}
+                        style={[styles.tab, activeTab === 'history' && [styles.activeTab, { backgroundColor: colors.primary }]]}
                         onPress={() => setActiveTab('history')}
                     >
-                        <Text style={[styles.tabText, activeTab === 'history' && styles.activeTabText]}>My History</Text>
+                        <Text style={[styles.tabText, { color: colors.textMuted }, activeTab === 'history' && [styles.activeTabText, { color: colors.white }]]}>My History</Text>
                     </TouchableOpacity>
                 </View>
 
                 {activeTab === 'book' ? (
-                    <View style={styles.card}>
-                        <Text style={styles.cardTitle}>Reservation Details</Text>
+                    <View style={[styles.card, { backgroundColor: colors.surface, shadowColor: colors.cardShadow, borderColor: colors.bgLight }]}>
+                        <Text style={[styles.cardTitle, { color: colors.textMain }]}>Reservation Details</Text>
 
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Number of Guests</Text>
+                            <Text style={[styles.label, { color: colors.textMain }]}>Number of Guests</Text>
                             <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.guestPicker}>
                                 {GUEST_OPTIONS.map((num) => (
                                     <TouchableOpacity
                                         key={num}
-                                        style={[styles.guestChip, guestCount === num && styles.guestChipActive]}
+                                        style={[styles.guestChip, { backgroundColor: colors.bgLight, borderColor: colors.border }, guestCount === num && [styles.guestChipActive, { backgroundColor: colors.primary, borderColor: colors.primary }]]}
                                         onPress={() => setGuestCount(num)}
                                     >
-                                        <Text style={[styles.guestText, guestCount === num && styles.guestTextActive]}>{num}</Text>
+                                        <Text style={[styles.guestText, { color: colors.textMain }, guestCount === num && [styles.guestTextActive, { color: colors.white }]]}>{num}</Text>
                                     </TouchableOpacity>
                                 ))}
                             </ScrollView>
@@ -235,14 +237,14 @@ export default function ReservationScreen() {
 
                         <View style={styles.row}>
                             <View style={[styles.inputGroup, { flex: 1, marginRight: 8 }]}>
-                                <Text style={styles.label}>Date</Text>
+                                <Text style={[styles.label, { color: colors.textMain }]}>Date</Text>
                                 <TouchableOpacity
-                                    style={styles.inputWrapper}
+                                    style={[styles.inputWrapper, { backgroundColor: colors.bgLight, borderColor: colors.border }]}
                                     onPress={() => setShowDatePicker(true)}
                                     activeOpacity={0.7}
                                 >
-                                    <Ionicons name="calendar-outline" size={20} color={Colors.primary} />
-                                    <Text style={[styles.input, !date && styles.placeholderText]}>
+                                    <Ionicons name="calendar-outline" size={20} color={colors.primary} />
+                                    <Text style={[styles.input, { color: colors.textMain }, !date && [styles.placeholderText, { color: colors.textMuted }]]}>
                                         {date || 'Select Date'}
                                     </Text>
                                 </TouchableOpacity>
@@ -287,14 +289,14 @@ export default function ReservationScreen() {
                                 )}
                             </View>
                             <View style={[styles.inputGroup, { flex: 1, marginLeft: 8 }]}>
-                                <Text style={styles.label}>Time</Text>
+                                <Text style={[styles.label, { color: colors.textMain }]}>Time</Text>
                                 <TouchableOpacity
-                                    style={styles.inputWrapper}
+                                    style={[styles.inputWrapper, { backgroundColor: colors.bgLight, borderColor: colors.border }]}
                                     onPress={() => setShowTimePicker(true)}
                                     activeOpacity={0.7}
                                 >
-                                    <Ionicons name="time-outline" size={20} color={Colors.primary} />
-                                    <Text style={[styles.input, !time && styles.placeholderText]}>
+                                    <Ionicons name="time-outline" size={20} color={colors.primary} />
+                                    <Text style={[styles.input, { color: colors.textMain }, !time && [styles.placeholderText, { color: colors.textMuted }]]}>
                                         {time || 'Select Time'}
                                     </Text>
                                 </TouchableOpacity>
@@ -339,10 +341,11 @@ export default function ReservationScreen() {
                         </View>
 
                         <View style={styles.inputGroup}>
-                            <Text style={styles.label}>Special Requests</Text>
+                            <Text style={[styles.label, { color: colors.textMain }]}>Special Requests</Text>
                             <TextInput
-                                style={[styles.input, styles.textArea]}
+                                style={[styles.input, styles.textArea, { backgroundColor: colors.bgLight, borderRadius: 16, borderColor: colors.border, color: colors.textMain }]}
                                 placeholder="Any allergies or special occasions?"
+                                placeholderTextColor={colors.textTertiary}
                                 multiline
                                 numberOfLines={4}
                                 value={specialRequests}
@@ -351,16 +354,16 @@ export default function ReservationScreen() {
                         </View>
 
                         <TouchableOpacity
-                            style={[styles.submitButton, isSubmitting && { opacity: 0.7 }]}
+                            style={[styles.submitButton, { backgroundColor: colors.textMain, shadowColor: colors.cardShadow }, isSubmitting && { opacity: 0.7 }]}
                             onPress={handleSubmit}
                             disabled={isSubmitting}
                         >
                             {isSubmitting ? (
-                                <ActivityIndicator color="#FFF" />
+                                <ActivityIndicator color={colors.surface} />
                             ) : (
                                 <>
-                                    <Text style={styles.submitButtonText}>Confirm Reservation</Text>
-                                    <Ionicons name="arrow-forward" size={20} color="#FFF" />
+                                    <Text style={[styles.submitButtonText, { color: colors.white }]}>Confirm Reservation</Text>
+                                    <Ionicons name="arrow-forward" size={20} color={colors.white} />
                                 </>
                             )}
                         </TouchableOpacity>
@@ -369,39 +372,39 @@ export default function ReservationScreen() {
                     <View style={styles.historyContainer}>
                         {reservations.length > 0 ? (
                             reservations.sort((a, b) => b.id - a.id).map((res) => (
-                                <View key={res.id} style={styles.historyCard}>
+                                <View key={res.id} style={[styles.historyCard, { backgroundColor: colors.surface, shadowColor: colors.cardShadow, borderColor: colors.bgLight }]}>
                                     <View style={styles.historyHeader}>
-                                        <View style={styles.dateBlock}>
-                                            <Text style={styles.dateDay}>{new Date(res.reservationDate).getDate()}</Text>
-                                            <Text style={styles.dateMonth}>{new Date(res.reservationDate).toLocaleString('default', { month: 'short' })}</Text>
+                                        <View style={[styles.dateBlock, { backgroundColor: colors.primary + '15' }]}>
+                                            <Text style={[styles.dateDay, { color: colors.primary }]}>{new Date(res.reservationDate).getDate()}</Text>
+                                            <Text style={[styles.dateMonth, { color: colors.primary }]}>{new Date(res.reservationDate).toLocaleString('default', { month: 'short' })}</Text>
                                         </View>
                                         <View style={styles.historyInfo}>
-                                            <Text style={styles.historyTime}>{res.reservationTime}</Text>
-                                            <Text style={styles.historyGuests}>{res.guestCount} Guests</Text>
+                                            <Text style={[styles.historyTime, { color: colors.textMain }]}>{res.reservationTime}</Text>
+                                            <Text style={[styles.historyGuests, { color: colors.textMuted }]}>{res.guestCount} Guests</Text>
                                         </View>
                                         <View style={[styles.statusBadge, { backgroundColor: statusColors[res.status] + '20' }]}>
                                             <Text style={[styles.statusText, { color: statusColors[res.status] }]}>{res.status}</Text>
                                         </View>
                                     </View>
                                     {res.specialRequests && (
-                                        <View style={styles.requestBox}>
-                                            <Ionicons name="chatbox-outline" size={14} color="#747D8C" />
-                                            <Text style={styles.requestText} numberOfLines={1}>{res.specialRequests}</Text>
+                                        <View style={[styles.requestBox, { backgroundColor: colors.bgLight }]}>
+                                            <Ionicons name="chatbox-outline" size={14} color={colors.textMuted} />
+                                            <Text style={[styles.requestText, { color: colors.textMuted }]} numberOfLines={1}>{res.specialRequests}</Text>
                                         </View>
                                     )}
                                     {res.status === 'PENDING' && (
-                                        <TouchableOpacity style={styles.cancelBtn} onPress={() => handleCancel(res.id)}>
-                                            <Text style={styles.cancelBtnText}>Cancel Reservation</Text>
+                                        <TouchableOpacity style={[styles.cancelBtn, { borderTopColor: colors.bgLight }]} onPress={() => handleCancel(res.id)}>
+                                            <Text style={[styles.cancelBtnText, { color: colors.error }]}>Cancel Reservation</Text>
                                         </TouchableOpacity>
                                     )}
                                 </View>
                             ))
                         ) : (
                             <View style={styles.emptyState}>
-                                <Ionicons name="calendar-clear-outline" size={64} color="#CBD5E0" />
-                                <Text style={styles.emptyText}>No reservations found</Text>
-                                <TouchableOpacity style={styles.emptyBtn} onPress={() => setActiveTab('book')}>
-                                    <Text style={styles.emptyBtnText}>Book Your First Table</Text>
+                                <Ionicons name="calendar-clear-outline" size={64} color={colors.border} />
+                                <Text style={[styles.emptyText, { color: colors.textMuted }]}>No reservations found</Text>
+                                <TouchableOpacity style={[styles.emptyBtn, { backgroundColor: colors.primary, shadowColor: colors.primary }]} onPress={() => setActiveTab('book')}>
+                                    <Text style={[styles.emptyBtnText, { color: colors.white }]}>Book Your First Table</Text>
                                 </TouchableOpacity>
                             </View>
                         )}
@@ -415,7 +418,6 @@ export default function ReservationScreen() {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#F8F9FA',
     },
     scrollView: {
         flex: 1,
@@ -431,27 +433,24 @@ const styles = StyleSheet.create({
     heroOverlay: {
         padding: 24,
         paddingBottom: 40,
-        backgroundColor: 'rgba(0,0,0,0.4)',
+        backgroundColor: 'rgba(0,0,0,0.5)',
     },
     heroTitle: {
         fontSize: 36,
         fontWeight: '800',
-        color: '#FFF',
         marginBottom: 4,
     },
     heroSubtitle: {
-        fontSize: 16,
+        fontSize: Typography.fontSize.md,
         color: 'rgba(255,255,255,0.9)',
         fontWeight: '500',
     },
     tabContainer: {
         flexDirection: 'row',
-        backgroundColor: '#FFF',
         marginHorizontal: 20,
-        marginTop: -25,
-        borderRadius: 16,
-        padding: 5,
-        shadowColor: '#000',
+        marginTop: -30,
+        borderRadius: 20,
+        padding: 6,
         shadowOffset: { width: 0, height: 10 },
         shadowOpacity: 0.1,
         shadowRadius: 20,
@@ -461,45 +460,41 @@ const styles = StyleSheet.create({
         flex: 1,
         paddingVertical: 12,
         alignItems: 'center',
-        borderRadius: 12,
+        borderRadius: 16,
     },
     activeTab: {
         backgroundColor: Colors.primary,
     },
     tabText: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#747D8C',
+        fontSize: Typography.fontSize.sm,
+        fontWeight: '700',
     },
     activeTabText: {
-        color: '#FFF',
+        color: Colors.white,
     },
     card: {
-        backgroundColor: '#FFF',
         margin: 20,
         marginTop: 24,
         padding: 24,
-        borderRadius: 24,
-        shadowColor: '#000',
+        borderRadius: 28,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.05,
         shadowRadius: 15,
         elevation: 4,
+        borderWidth: 1,
     },
     cardTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#2D3748',
-        marginBottom: 20,
+        fontSize: Typography.fontSize.xl,
+        fontWeight: '800',
+        marginBottom: 24,
     },
     inputGroup: {
         marginBottom: 20,
     },
     label: {
-        fontSize: 14,
-        fontWeight: '600',
-        color: '#718096',
-        marginBottom: 10,
+        fontSize: Typography.fontSize.sm,
+        fontWeight: '700',
+        marginBottom: 12,
         marginLeft: 4,
     },
     guestPicker: {
@@ -508,25 +503,22 @@ const styles = StyleSheet.create({
     guestChip: {
         width: 48,
         height: 48,
-        borderRadius: 24,
-        backgroundColor: '#F7FAFC',
+        borderRadius: 12,
         alignItems: 'center',
         justifyContent: 'center',
         marginRight: 10,
         borderWidth: 1,
-        borderColor: '#E2E8F0',
     },
     guestChipActive: {
         backgroundColor: Colors.primary,
         borderColor: Colors.primary,
     },
     guestText: {
-        fontSize: 16,
-        fontWeight: 'bold',
-        color: '#4A5568',
+        fontSize: Typography.fontSize.md,
+        fontWeight: '800',
     },
     guestTextActive: {
-        color: '#FFF',
+        color: Colors.white,
     },
     row: {
         flexDirection: 'row',
@@ -534,69 +526,65 @@ const styles = StyleSheet.create({
     inputWrapper: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F7FAFC',
-        borderRadius: 14,
-        paddingHorizontal: 14,
-        height: 54,
+        borderRadius: 16,
+        paddingHorizontal: 16,
+        height: 56,
         borderWidth: 1,
-        borderColor: '#E2E8F0',
     },
     input: {
         flex: 1,
         marginLeft: 10,
-        fontSize: 16,
-        color: '#2D3748',
+        fontSize: Typography.fontSize.base,
         paddingVertical: 12,
     },
     placeholderText: {
-        color: '#A0AEC0',
+        color: Colors.textMuted,
     },
     textArea: {
         height: 100,
         paddingTop: 14,
         textAlignVertical: 'top',
-        backgroundColor: '#F7FAFC',
-        borderRadius: 14,
-        paddingHorizontal: 14,
+        borderRadius: 16,
+        paddingHorizontal: 16,
         borderWidth: 1,
-        borderColor: '#E2E8F0',
     },
     submitButton: {
-        backgroundColor: Colors.primary,
-        height: 56,
-        borderRadius: 16,
+        height: 60,
+        borderRadius: 20,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
         marginTop: 10,
-        gap: 10,
+        gap: 12,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 8,
+        elevation: 5,
     },
     submitButtonText: {
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: Typography.fontSize.lg,
+        fontWeight: '800',
     },
     historyContainer: {
         padding: 20,
     },
     historyCard: {
-        backgroundColor: '#FFF',
-        borderRadius: 20,
+        borderRadius: 24,
         padding: 16,
         marginBottom: 16,
-        shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.05,
         shadowRadius: 10,
         elevation: 2,
+        borderWidth: 1,
     },
     historyHeader: {
         flexDirection: 'row',
         alignItems: 'center',
     },
     dateBlock: {
-        width: 50,
-        height: 54,
+        width: 52,
+        height: 52,
         backgroundColor: Colors.primary + '15',
         borderRadius: 12,
         alignItems: 'center',
@@ -604,13 +592,13 @@ const styles = StyleSheet.create({
         marginRight: 16,
     },
     dateDay: {
-        fontSize: 20,
-        fontWeight: 'bold',
+        fontSize: Typography.fontSize.xl,
+        fontWeight: '800',
         color: Colors.primary,
     },
     dateMonth: {
         fontSize: 10,
-        fontWeight: 'bold',
+        fontWeight: '900',
         color: Colors.primary,
         textTransform: 'uppercase',
     },
@@ -618,132 +606,137 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     historyTime: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        color: '#2D3748',
+        fontSize: Typography.fontSize.md,
+        fontWeight: '800',
     },
     historyGuests: {
-        fontSize: 14,
-        color: '#718096',
+        fontSize: Typography.fontSize.sm,
+        color: Colors.textMuted,
         marginTop: 2,
+        fontWeight: '600',
     },
     statusBadge: {
         paddingHorizontal: 10,
-        paddingVertical: 4,
-        borderRadius: 8,
+        paddingVertical: 6,
+        borderRadius: 10,
     },
     statusText: {
-        fontSize: 11,
-        fontWeight: 'bold',
+        fontSize: 10,
+        fontWeight: '800',
+        textTransform: 'uppercase',
     },
     requestBox: {
         flexDirection: 'row',
         alignItems: 'center',
-        backgroundColor: '#F7FAFC',
-        padding: 10,
-        borderRadius: 10,
+        padding: 12,
+        borderRadius: 12,
         marginTop: 12,
         gap: 8,
     },
     requestText: {
         fontSize: 12,
-        color: '#747D8C',
+        color: Colors.textMuted,
         fontStyle: 'italic',
         flex: 1,
     },
     cancelBtn: {
         marginTop: 12,
-        paddingVertical: 8,
+        paddingVertical: 12,
         alignItems: 'center',
         borderTopWidth: 1,
-        borderTopColor: '#F7FAFC',
     },
     cancelBtnText: {
-        color: '#FF4757',
-        fontSize: 14,
-        fontWeight: '600',
+        color: Colors.error,
+        fontSize: Typography.fontSize.sm,
+        fontWeight: '700',
     },
     emptyState: {
         alignItems: 'center',
         justifyContent: 'center',
-        marginTop: 60,
+        marginTop: 80,
     },
     emptyText: {
-        fontSize: 18,
-        color: '#718096',
+        fontSize: Typography.fontSize.lg,
         marginTop: 16,
         marginBottom: 24,
+        fontWeight: '600',
     },
     emptyBtn: {
-        backgroundColor: Colors.primary,
-        paddingHorizontal: 24,
-        paddingVertical: 12,
-        borderRadius: 12,
+        paddingHorizontal: 28,
+        paddingVertical: 14,
+        borderRadius: 16,
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.3,
+        shadowRadius: 8,
+        elevation: 6,
     },
     emptyBtnText: {
-        color: '#FFF',
-        fontWeight: 'bold',
+        fontWeight: '800',
+        fontSize: Typography.fontSize.base,
     },
     loginRequired: {
         flex: 1,
-        backgroundColor: '#FFF',
         alignItems: 'center',
         justifyContent: 'center',
         padding: 40,
     },
     loginTitle: {
-        fontSize: 28,
-        fontWeight: 'bold',
-        color: '#2D3748',
+        fontSize: Typography.fontSize['4xl'],
+        fontWeight: '800',
         marginTop: 24,
         marginBottom: 12,
     },
     loginSubtitle: {
-        fontSize: 16,
-        color: '#718096',
+        fontSize: Typography.fontSize.md,
+        color: Colors.textMuted,
         textAlign: 'center',
         lineHeight: 24,
-        marginBottom: 32,
+        marginBottom: 40,
+        fontWeight: '500',
     },
     loginButton: {
-        backgroundColor: Colors.primary,
         paddingHorizontal: 40,
-        paddingVertical: 16,
-        borderRadius: 18,
+        paddingVertical: 18,
+        borderRadius: 20,
         width: '100%',
         alignItems: 'center',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 15,
+        elevation: 8,
     },
     loginButtonText: {
-        color: '#FFF',
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: Typography.fontSize.lg,
+        fontWeight: '800',
     },
     modalOverlay: {
         flex: 1,
-        backgroundColor: 'rgba(0,0,0,0.5)',
+        backgroundColor: 'rgba(0,0,0,0.6)',
         justifyContent: 'flex-end',
     },
     modalContent: {
-        backgroundColor: '#FFF',
-        borderTopLeftRadius: 30,
-        borderTopRightRadius: 30,
+        borderTopLeftRadius: 32,
+        borderTopRightRadius: 32,
         padding: 24,
         paddingBottom: 40,
+        shadowOffset: { width: 0, height: -10 },
+        shadowOpacity: 0.1,
+        shadowRadius: 20,
+        elevation: 20,
     },
     pickerHeader: {
         flexDirection: 'row',
         justifyContent: 'space-between',
         alignItems: 'center',
-        marginBottom: 16,
+        marginBottom: 20,
     },
     pickerTitle: {
-        fontSize: 20,
-        fontWeight: 'bold',
-        color: '#2D3748',
+        fontSize: Typography.fontSize.xl,
+        fontWeight: '800',
     },
     doneBtn: {
-        fontSize: 18,
-        fontWeight: 'bold',
+        fontSize: Typography.fontSize.md,
+        fontWeight: '800',
         color: Colors.primary,
     },
 });
